@@ -110,20 +110,23 @@ export default {
         this.eventList.push(new Flag(1, this.getTime(), this.colorScene[1]))
         this.endPlusProche(this.getTime())
         console.log(this.eventList)
+        // console.log(this.eventList[0].arguments(timeDeb))
+
       }
     },
     getTime() {
-      const audioElement = this.$refs.audioPlayer;
-      const currentTime = audioElement.currentTime;
+      // const audioElement = this.$refs.audioPlayer;
+      const currentTime = this.audioPlayer.currentTime;
       return currentTime
     },
     launchFile(file) {
+
       const reader = new FileReader();
       console.log(file)
-      this.songPlaying = file.name
+      this.songPlaying = file.name 
 
       reader.onload = (event) => {
-        const audioPlayer = this.$refs.audioPlayer;
+        audioPlayer = this.$refs.audioPlayer;
         audioPlayer.src = event.target.result;
 
       };
@@ -133,16 +136,19 @@ export default {
     valueChangedHandler(speedval) {
       this.setSpeed(speedval / 100)
     },
+    endPlusProche(time){
+      // this.eventList.sort((a,b) => a.)
+    },
     onFileChange(event) {
       const file = event.target.files[0];
       const reader = new FileReader();
       this.songPath.push(file)
       this.songPlaying = file.name
+      this.audioPlayer = this.$refs.audioPlayer; // Get a reference to the audio player
 
 
       reader.onload = (event) => {
-        const audioPlayer = this.$refs.audioPlayer;
-        audioPlayer.src = event.target.result;
+        this.audioPlayer.src = event.target.result;
 
       };
 
