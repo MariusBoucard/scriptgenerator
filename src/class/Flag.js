@@ -2,8 +2,8 @@ export default class Flag {
     constructor(scene,timeDeb,color,zone) {
       this.scene = scene;
       this.timeDeb = timeDeb
-      this.color= color;
       this.timeFin = null;
+      this.color= color;
       this.zone = zone;
       
     }

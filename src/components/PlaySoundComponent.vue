@@ -19,8 +19,8 @@
 
     <div class="container">
       <div class="button-wrap">
-        <label class="buttonbis" for="upload" > ouvrir fichier </label>
-        <input id="upload"  type="file" @change="onFileChange" style="visibility:hidden ; width:0px">
+        <label class="buttonbis" for="upload"> ouvrir fichier </label>
+        <input id="upload" type="file" @change="onFileChange" style="visibility:hidden ; width:0px">
       </div>
     </div>
     <p style="font-weight: 300;">Song playing : {{ this.songPlaying }}</p>
@@ -42,7 +42,7 @@
       <div v-for="zone in timelineZones" :key="zone.id" :style="zone.style"></div>
     </div>
 
-    <h2>  Decoupage scenes </h2>
+    <h2> Decoupage scenes </h2>
 
     <div class="timeline">
       <div v-for="zone in timelineEvent" :key="zone.id" :style="zone.style"></div>
@@ -62,57 +62,58 @@
 
       <div class="container2">
 
-  <div class="column2">
-        <table id="tab">
-          <tr>
-            <th>zone</th>
-            <th>Debut</th>
-            <th>Fin</th>
-            <th>Couleur</th>
-            <th>Enlever</th>
-          </tr>
+        <div class="column2">
+          <table id="tab">
+            <tr>
+              <th>zone</th>
+              <th>Debut</th>
+              <th>Fin</th>
+              <th>Couleur</th>
+              <th>Enlever</th>
+            </tr>
 
-          <tr v-for="item in this.zoneListComp" :key="item">
+            <tr v-for="item in this.zoneListComp" :key="item">
 
-            <td>{{ item.partie }}</td>
-            <td>{{ item.timeDeb }}</td>
-            <td>{{ item.timeFin }}</td>
-            <td>
-              <div class="color-display" style="{ backgroundColor: item.color}"></div>
-            </td>
-            <td>
-              <button @click="removeZone(item)"></button>
-            </td>
-          </tr>
-        </table>
-</div>
-<div class="column2">
+              <td>{{ item.partie }}</td>
+              <td>{{ item.timeDeb }}</td>
+              <td>{{ item.timeFin }}</td>
+              <td>
+                <div class="color-display" :style='{ backgroundColor: item.color }'></div>
+              </td>
+              <td>
+                <button @click="removeZone(item)"></button>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="column2">
 
 
-  <table id="tab">
-    <tr>
-      <th>Scene</th>
-      <th>Debut</th>
-      <th>Fin</th>
-      <th>Couleur</th>
-      <th>Enlever</th>
-    </tr>
+          <table id="tab">
+            <tr>
+              <th>Scene</th>
+              <th>Debut</th>
+              <th>Fin</th>
+              <th>Couleur</th>
+              <th>Enlever</th>
+            </tr>
 
-    <tr v-for="item in this.eventListComp" :key="item">
+            <tr v-for="item in this.eventListComp" :key="item">
 
-      <td>{{ item.scene }}</td>
-      <td>{{ item.timeDeb }}</td>
-      <td>{{ item.timeFin }}</td>
-      <td>
-        <div class="color-display" :style="{ backgroundColor: item.color }"></div>
-      </td>
-      <td>
-        <button @click="removeEvent(item)"></button>
-      </td>
-    </tr>
-  </table>
-</div>
+              <td>{{ item.scene }}</td>
+              <td>{{ item.timeDeb }}</td>
+              <td>{{ item.timeFin }}</td>
+              <td>
+                <div class="color-display" :style="{ backgroundColor: item.color }"></div>
+              </td>
+              <td>
+                <button @click="removeEvent(item)"></button>
+              </td>
+            </tr>
+          </table>
+        </div>
 
+        <button style="background-color: red; width : 100px" @click="downloadCSV(this.eventList, this.zoneList)"></button>
       </div>
 
 
@@ -127,12 +128,13 @@
 import Flag from '@/class/Flag';
 import PartiesSong from '@/class/PartiesSong'
 import Song from '@/class/Song'
+
 export default {
-  mounted(){
+  mounted() {
 
     this.audioPlayer = this.$refs.audioPlayer;
     console.log(localStorage.getItem('songList'))
-    if(localStorage.getItem('songList') !== null){
+    if (localStorage.getItem('songList') !== null) {
 
       this.songPath = JSON.parse(localStorage.getItem('songList'))
     }
@@ -246,8 +248,44 @@ export default {
     }
   },
   methods: {
+    downloadCSV(event, zone) {
+      const csv = this.convertToCSV(event, zone);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'data.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+
+    convertToCSV(event, zone) {
+      const header = Object.keys(zone[0]).join(',');
+
+      //intercaler les trucs :
+      event.sort((a, b) => a.timeDeb < b.timeDeb)
+      zone.sort((a, b) => a.timeDeb < b.timeDeb)
+
+      var total = event.concat(zone)
+      console.log(total)
+      total.sort((a, b) => a.timeDeb < b.timeDeb)
+
+      const rows = total.map(obj => {
+        console.log(Object.keys(obj)[0])
+        if (Object.keys(obj)[0] === "partie") {
+          return "\n" + Object.values(obj).join(',');
+        } else {
+          return Object.values(obj).join(',');
+        }
+
+
+      })
+      return `${header}\n${rows.join('\n')}`;
+    },
+
     removeEvent(item) {
-      
+
       // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
       var toRemove = this.eventList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.eventList.splice(toRemove, 1)
@@ -332,13 +370,13 @@ export default {
 
       this.saveElements()
     },
-    saveElements(){
+    saveElements() {
       //Find the song we are working on
-      var found = this.songPath.find( song => this.songPlaying === song.name)
+      var found = this.songPath.find(song => this.songPlaying === song.name)
       console.log(found)
       found.setEventList(this.eventList)
       found.setZoneList(this.zoneList)
-      localStorage.setItem('songList',JSON.stringify(this.songPath))
+      localStorage.setItem('songList', JSON.stringify(this.songPath))
     },
     getTime() {
       // const audioElement = this.$refs.audioPlayer;
@@ -351,7 +389,7 @@ export default {
       this.songPlaying = file.name
 
       const songURL = `file://${file.path}`;
-       this.audioPlayer.src = songURL;
+      this.audioPlayer.src = songURL;
 
       reader.onload = (event) => {
         // this.audioPlayer = this.$refs.audioPlayer;
@@ -369,7 +407,7 @@ export default {
     //attention aux nuls
     endPlusProche(time) {
       this.eventList.sort((a, b) => a.getTimeDeb() < b.getTimeDeb())
-      var eventPlusProche = new Flag(9, -1, 'red')
+      var eventPlusProche = new Flag(9, -1, 'red',"caca")
       this.eventList.forEach(
         event => {
           console.log(event.getTimeFin())
@@ -385,17 +423,18 @@ export default {
 
     },
     endPlusProcheZone(time) {
-      this.zoneList.sort((a, b) => a.getTimeDeb() < b.getTimeDeb())
+      this.zoneList.sort((a, b) => a.timeDeb < b.timeDeb)
       var eventPlusProche = new PartiesSong(9, -1, 'red')
       this.zoneList.forEach(
         event => {
-          if ((event.getTimeFin() > eventPlusProche.getTimeFin() && event.getTimeFin() < time && String(event.getTimeFin()) !== 'null') || String(event.getTimeFin()) === 'null') {
+          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') || String(event.timeFin) === 'null') {
 
             eventPlusProche = event
           }
         }
       )
-      if (eventPlusProche.getTimeDeb() !== -1) {
+     
+      if (eventPlusProche.timeFin !== -1) {
         eventPlusProche.setTimeFin(time)
       }
 
@@ -406,10 +445,10 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      this.songPath.push(new Song(file.name,file.path,[],[]))
+      this.songPath.push(new Song(file.name, file.path, [], []))
       this.songPlaying = file.name
-       // Get a reference to the audio player
-      localStorage.setItem('songList',JSON.stringify(this.songPath))
+      // Get a reference to the audio player
+      localStorage.setItem('songList', JSON.stringify(this.songPath))
 
       reader.onload = (event) => {
         this.audioPlayer.src = event.target.result;
@@ -744,4 +783,5 @@ audio::-webkit-media-controls-toggle-closed-captions-button */
 .ol-days>li:nth-child(6n + 6) {
   --clr_bg: #fc6868;
   --clr_accent: #2e2b3c;
-}</style>
+}
+</style>

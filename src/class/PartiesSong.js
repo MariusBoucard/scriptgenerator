@@ -1,9 +1,9 @@
-export default class PartieSong {
+export default class PartiesSong {
   constructor(partie,timeDeb,color) {
     this.partie = partie;
     this.timeDeb = timeDeb
-    this.color= color;
     this.timeFin = null;
+    this.color= color;
    
     
   }
