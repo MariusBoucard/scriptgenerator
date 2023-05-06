@@ -19,8 +19,8 @@
 
     <div class="container">
       <div class="button-wrap">
-        <label class="buttonbis" for="upload">Upload File</label>
-        <input id="upload" type="file" @change="onFileChange">
+        <label class="buttonbis" for="upload" @click="onFileChange">Upload File</label>
+        <input id="upload"  type="file" @change="onFileChange" style="visibility:hidde n; width:0px">
       </div>
     </div>
     <p style="font-weight: 300;">Song playing : {{ this.songPlaying }}</p>
@@ -35,6 +35,20 @@
       <button class="button" @click="stop">stop</button>
 
     </div>
+
+    <h2> Parties de la chanson </h2>
+
+    <div class="timeline">
+      <div v-for="zone in timelineZones" :key="zone.id" :style="zone.style"></div>
+    </div>
+
+    <h2>  Decoupage scenes </h2>
+
+    <div class="timeline">
+      <div v-for="zone in timelineEvent" :key="zone.id" :style="zone.style"></div>
+    </div>
+
+
     <div style="text-align: center;">
       <h3 style="display: block;float: top">Playing rate</h3>
       <div class="slider" style="margin : auto">
@@ -43,20 +57,75 @@
         <p id="rangeValue">100</p>
 
       </div>
-      <ul>
-        <li v-for="item in this.eventListComp" :key="item" @click="">
-          {{ item.scene }}
-          {{ item.timeDeb }}
-        </li>
 
-      </ul>
-      <input v-on:keydown="handleKeyDown" />
+
+
+      <div class="container2">
+
+  <div class="column2">
+        <table id="tab">
+          <tr>
+            <th>zone</th>
+            <th>Debut</th>
+            <th>Fin</th>
+            <th>Couleur</th>
+            <th>Enlever</th>
+          </tr>
+
+          <tr v-for="item in this.zoneListComp" :key="item">
+
+            <td>{{ item.partie }}</td>
+            <td>{{ item.timeDeb }}</td>
+            <td>{{ item.timeFin }}</td>
+            <td>
+              <div class="color-display" style="{ backgroundColor: item.color}"></div>
+            </td>
+            <td>
+              <button @click="removeZone(item)"></button>
+            </td>
+          </tr>
+        </table>
+</div>
+<div class="column2">
+
+
+  <table id="tab">
+    <tr>
+      <th>Scene</th>
+      <th>Debut</th>
+      <th>Fin</th>
+      <th>Couleur</th>
+      <th>Enlever</th>
+    </tr>
+
+    <tr v-for="item in this.eventListComp" :key="item">
+
+      <td>{{ item.scene }}</td>
+      <td>{{ item.timeDeb }}</td>
+      <td>{{ item.timeFin }}</td>
+      <td>
+        <div class="color-display" :style="{ backgroundColor: item.color }"></div>
+      </td>
+      <td>
+        <button @click="removeEvent(item)"></button>
+      </td>
+    </tr>
+  </table>
+</div>
+
+      </div>
+
+
+
+
+
     </div>
   </div>
 </template>
   
 <script>
 import Flag from '@/class/Flag';
+import PartiesSong from '@/class/PartiesSong'
 export default {
   data() {
     return {
@@ -65,6 +134,14 @@ export default {
       speed: 100,
       songPath: [],
       songPlaying: "",
+      ZoneKey: {
+        "1": '65',
+        "2": '90',
+        "3": '69',
+        "4": '82',
+        "5": '84',
+        "6": '89',
+      },
       SceneKey: {
         "1": '49',
         "2": '50',
@@ -81,7 +158,25 @@ export default {
         "5": 'purple',
         "6": 'pink',
       },
-      eventList: []
+      colorZone: {
+        "1": 'green',
+        "2": 'orange',
+        "3": 'red',
+        "4": 'yellow',
+        "5": 'purple',
+        "6": 'pink',
+      },
+      songZoneName: {
+        "1": 'intro',
+        "2": 'verse',
+        "3": 'chorus',
+        "4": 'bridge',
+        "5": 'solo',
+        "6": 'transition',
+      },
+      totalTime: 0,
+      eventList: [],
+      zoneList: [],
     };
   },
   watch: {
@@ -99,32 +194,131 @@ export default {
     },
     eventListComp() {
       return this.eventList
+    },
+    zoneListComp() {
+      return this.zoneList
+    },
+    timelineZones() {
+      return this.zoneList.map((element, index) => {
+        const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
+        const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
+        const totalTime = this.audioPlayer.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
+        const startPercent = (startTime / totalTime) * 100;
+        const endPercent = (endTime / totalTime) * 100;
+        const widthPercent = endPercent - startPercent;
+        return {
+          id: index,
+          style: {
+            left: `${startPercent}%`,
+            width: `${widthPercent}%`,
+            backgroundColor: element.color // assuming you have a property called "color" on your element
+          }
+        };
+      });
+    },
+    timelineEvent() {
+      return this.eventList.map((element, index) => {
+        const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
+        const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
+        const totalTime = this.audioPlayer.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
+        const startPercent = (startTime / totalTime) * 100;
+        const endPercent = (endTime / totalTime) * 100;
+        const widthPercent = endPercent - startPercent;
+        return {
+          id: index,
+          style: {
+            left: `${startPercent}%`,
+            width: `${widthPercent}%`,
+            backgroundColor: element.color // assuming you have a property called "color" on your element
+          }
+        };
+      });
     }
   },
   methods: {
+    removeEvent(item) {
+      // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
+      var toRemove = this.eventList.findIndex(found => { return found.timeDeb === item.timeDeb })
+      this.eventList.splice(toRemove, 1)
+    },
+    removeZone(item) {
+      // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
+      var toRemove = this.zoneList.findIndex(found => { return found.timeDeb === item.timeDeb })
+      this.zoneList.splice(toRemove, 1)
+    },
     handleKeyDown(event) {
       // Do something with the event, such as logging the key code
-      console.log(this.SceneKey[1], event.keyCode)
+      console.log("Eventcode " + event.keyCode)
       if (String(event.keyCode) === this.SceneKey[1]) {
+        console.log("scene 1 added")
         this.endPlusProche(this.getTime())
         this.eventList.push(new Flag(1, this.getTime(), this.colorScene[1]))
-        console.log(this.eventList)
-          console.log(this.eventList[0].getTimeFin() )
 
       }
       if (String(event.keyCode) === this.SceneKey[2]) {
+        console.log("scene 2 added")
+
         this.endPlusProche(this.getTime())
         this.eventList.push(new Flag(2, this.getTime(), this.colorScene[2]))
-        console.log(this.eventList)
-          console.log(this.eventList[0].getTimeFin() )
 
       }
       if (String(event.keyCode) === this.SceneKey[3]) {
+        console.log("scene 3 added")
         this.endPlusProche(this.getTime())
         this.eventList.push(new Flag(3, this.getTime(), this.colorScene[3]))
-        console.log(this.eventList)
-          console.log(this.eventList[0].getTimeFin() )
+      }
+      if (String(event.keyCode) === this.SceneKey[4]) {
+        console.log("scene 3 added")
+        this.endPlusProche(this.getTime())
+        this.eventList.push(new Flag(4, this.getTime(), this.colorScene[4]))
+      }
+      if (String(event.keyCode) === this.SceneKey[5]) {
+        console.log("scene 3 added")
+        this.endPlusProche(this.getTime())
+        this.eventList.push(new Flag(5, this.getTime(), this.colorScene[5]))
+      }
+      if (String(event.keyCode) === this.SceneKey[6]) {
+        console.log("scene 3 added")
+        this.endPlusProche(this.getTime())
+        this.eventList.push(new Flag(6, this.getTime(), this.colorScene[6]))
+      }
 
+
+      if (String(event.keyCode) === this.ZoneKey[1]) {
+        this.endPlusProcheZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[1], this.getTime(), this.colorZone[1]))
+        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
+        console.log(this.zoneList)
+      }
+      if (String(event.keyCode) === this.ZoneKey[2]) {
+        this.endPlusProcheZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[2], this.getTime(), this.colorZone[2]))
+        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
+        console.log(this.zoneList)
+      }
+      if (String(event.keyCode) === this.ZoneKey[3]) {
+        this.endPlusProcheZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[3], this.getTime(), this.colorZone[3]))
+        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
+        console.log(this.zoneList)
+      }
+      if (String(event.keyCode) === this.ZoneKey[4]) {
+        this.endPlusProcheZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[4], this.getTime(), this.colorZone[4]))
+        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
+        console.log(this.zoneList)
+      }
+      if (String(event.keyCode) === this.ZoneKey[5]) {
+        this.endPlusProcheZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[5], this.getTime(), this.colorZone[5]))
+        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
+        console.log(this.zoneList)
+      }
+      if (String(event.keyCode) === this.ZoneKey[6]) {
+        this.endPlusProcheZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[6], this.getTime(), this.colorZone[6]))
+        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
+        console.log(this.zoneList)
       }
     },
     getTime() {
@@ -136,7 +330,7 @@ export default {
 
       const reader = new FileReader();
       console.log(file)
-      this.songPlaying = file.name 
+      this.songPlaying = file.name
 
       reader.onload = (event) => {
         audioPlayer = this.$refs.audioPlayer;
@@ -150,21 +344,36 @@ export default {
       this.setSpeed(speedval / 100)
     },
     //attention aux nuls
-    endPlusProche(time){
-      this.eventList.sort((a,b) => a.getTimeDeb()<b.getTimeDeb())
-     var eventPlusProche = new Flag(9,-1,'red')
+    endPlusProche(time) {
+      this.eventList.sort((a, b) => a.getTimeDeb() < b.getTimeDeb())
+      var eventPlusProche = new Flag(9, -1, 'red')
       this.eventList.forEach(
         event => {
           console.log(event.getTimeFin())
-          if((event.getTimeFin()>eventPlusProche.getTimeFin() && event.getTimeFin()<time && String(event.getTimeFin())!=='null') || String(event.getTimeFin())==='null'){
+          if ((event.getTimeFin() > eventPlusProche.getTimeFin() && event.getTimeFin() < time && String(event.getTimeFin()) !== 'null') || String(event.getTimeFin()) === 'null') {
 
-            eventPlusProche= event
+            eventPlusProche = event
           }
         }
       )
-      if( eventPlusProche.getTimeDeb()!==-1){
-          console.log("c bon")
-          eventPlusProche.setTimeFin(time)
+      if (eventPlusProche.getTimeDeb() !== -1) {
+        eventPlusProche.setTimeFin(time)
+      }
+
+    },
+    endPlusProcheZone(time) {
+      this.zoneList.sort((a, b) => a.getTimeDeb() < b.getTimeDeb())
+      var eventPlusProche = new PartiesSong(9, -1, 'red')
+      this.zoneList.forEach(
+        event => {
+          if ((event.getTimeFin() > eventPlusProche.getTimeFin() && event.getTimeFin() < time && String(event.getTimeFin()) !== 'null') || String(event.getTimeFin()) === 'null') {
+
+            eventPlusProche = event
+          }
+        }
+      )
+      if (eventPlusProche.getTimeDeb() !== -1) {
+        eventPlusProche.setTimeFin(time)
       }
 
     },
@@ -175,13 +384,13 @@ export default {
       this.songPlaying = file.name
       this.audioPlayer = this.$refs.audioPlayer; // Get a reference to the audio player
 
-
       reader.onload = (event) => {
         this.audioPlayer.src = event.target.result;
 
       };
 
       reader.readAsDataURL(file);
+      this.totalTime = this.audioPlayer.duration
     },
 
     play() {
@@ -216,6 +425,69 @@ export default {
   ;
 </script>
 <style>
+.container2 {
+  display: flex;
+  flex-direction: row;
+}
+
+.column2 {
+  flex: 1;
+  padding: 10px;
+}
+
+.timeline {
+  border: 1px solid black;
+  width: 100%;
+  height: 50px;
+  position: relative;
+
+  background-color: red;
+}
+
+
+.timeline>div {
+  position: absolute;
+  height: 100%;
+  top: 0;
+}
+
+.color-display {
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  border-radius: 5%;
+}
+
+#tab td,
+#tab th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#tab tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#tab tr:hover {
+  background-color: #ddd;
+}
+
+#tab th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+
+ul.horizontal-list {
+  list-style: none;
+}
+
+ul.horizontal-list li {
+  display: inline-block;
+}
+
 .slider {
 
   width: 60%;
