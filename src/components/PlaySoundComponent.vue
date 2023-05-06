@@ -19,8 +19,8 @@
 
     <div class="container">
       <div class="button-wrap">
-        <label class="buttonbis" for="upload" @click="onFileChange">Upload File</label>
-        <input id="upload"  type="file" @change="onFileChange" style="visibility:hidde n; width:0px">
+        <label class="buttonbis" for="upload" > ouvrir fichier </label>
+        <input id="upload"  type="file" @change="onFileChange" style="visibility:hidden ; width:0px">
       </div>
     </div>
     <p style="font-weight: 300;">Song playing : {{ this.songPlaying }}</p>
@@ -127,6 +127,9 @@
 import Flag from '@/class/Flag';
 import PartiesSong from '@/class/PartiesSong'
 export default {
+  mount(){
+      this.songPath = JSON.parse(localStorage.getItem('songList'))
+  },
   data() {
     return {
       currentTime: 0,
@@ -312,13 +315,11 @@ export default {
         this.endPlusProcheZone(this.getTime())
         this.zoneList.push(new PartiesSong(this.songZoneName[5], this.getTime(), this.colorZone[5]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-        console.log(this.zoneList)
       }
       if (String(event.keyCode) === this.ZoneKey[6]) {
         this.endPlusProcheZone(this.getTime())
         this.zoneList.push(new PartiesSong(this.songZoneName[6], this.getTime(), this.colorZone[6]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-        console.log(this.zoneList)
       }
     },
     getTime() {
@@ -380,9 +381,10 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      this.songPath.push(file)
+      this.songPath.push(file.path)
       this.songPlaying = file.name
       this.audioPlayer = this.$refs.audioPlayer; // Get a reference to the audio player
+      localStorage.setItem('songList',JSON.stringify(this.songPath))
 
       reader.onload = (event) => {
         this.audioPlayer.src = event.target.result;
