@@ -233,6 +233,8 @@ export default {
         const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
         const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
         const totalTime = this.audioPlayer.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
+        console.log(startTime)
+        console.log(totalTime)
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
@@ -264,12 +266,12 @@ export default {
       const header = Object.keys(zone[0]).join(',');
 
       //intercaler les trucs :
-      event.sort((a, b) => a.timeDeb < b.timeDeb)
-      zone.sort((a, b) => a.timeDeb < b.timeDeb)
+      event.sort((a, b) => a.timeDeb - b.timeDeb)
+      zone.sort((a, b) => a.timeDeb - b.timeDeb)
 
       var total = event.concat(zone)
+      total =  total.sort((a, b) => a.timeDeb - b.timeDeb)
       console.log(total)
-      total.sort((a, b) => a.timeDeb < b.timeDeb)
 
       const rows = total.map(obj => {
         console.log(Object.keys(obj)[0])
@@ -373,9 +375,13 @@ export default {
     saveElements() {
       //Find the song we are working on
       var found = this.songPath.find(song => this.songPlaying === song.name)
-      console.log(found)
-      found.setEventList(this.eventList)
-      found.setZoneList(this.zoneList)
+      if (found) {
+  console.log(typeof found);
+  found.eventList = (this.eventList);
+  found.zoneList = (this.zoneList);
+}
+
+
       localStorage.setItem('songList', JSON.stringify(this.songPath))
     },
     getTime() {
@@ -406,19 +412,19 @@ export default {
     },
     //attention aux nuls
     endPlusProche(time) {
-      this.eventList.sort((a, b) => a.getTimeDeb() < b.getTimeDeb())
+      this.eventList.sort((a, b) => a.timeDeb < b.timeDeb)
       var eventPlusProche = new Flag(9, -1, 'red',"caca")
       this.eventList.forEach(
         event => {
-          console.log(event.getTimeFin())
-          if ((event.getTimeFin() > eventPlusProche.getTimeFin() && event.getTimeFin() < time && String(event.getTimeFin()) !== 'null') || String(event.getTimeFin()) === 'null') {
+          console.log(event.timeFin)
+          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') || String(event.timeFin) === 'null') {
 
             eventPlusProche = event
           }
         }
       )
-      if (eventPlusProche.getTimeDeb() !== -1) {
-        eventPlusProche.setTimeFin(time)
+      if (eventPlusProche.timeDeb !== -1) {
+        eventPlusProche.timeFin  = time
       }
 
     },
@@ -435,7 +441,8 @@ export default {
       )
      
       if (eventPlusProche.timeFin !== -1) {
-        eventPlusProche.setTimeFin(time)
+        console.log(typeof eventPlusProche); // output: "number"
+        eventPlusProche.timeFin = time
       }
 
     },
@@ -449,7 +456,8 @@ export default {
       this.songPlaying = file.name
       // Get a reference to the audio player
       localStorage.setItem('songList', JSON.stringify(this.songPath))
-
+      this.eventList = []
+      this.zoneList = []
       reader.onload = (event) => {
         this.audioPlayer.src = event.target.result;
 
