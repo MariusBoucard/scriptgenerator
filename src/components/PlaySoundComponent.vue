@@ -82,7 +82,7 @@
                 <div class="color-display" :style='{ backgroundColor: item.color }'></div>
               </td>
               <td>
-                <button @click="removeZone(item)"></button>
+                <button @click="removeZone(item)" class="removebtn" ></button>
               </td>
             </tr>
           </table>
@@ -108,7 +108,7 @@
                 <div class="color-display" :style="{ backgroundColor: item.color }"></div>
               </td>
               <td>
-                <button @click="removeEvent(item)"></button>
+                <button class="removebtn" @click="removeEvent(item)"></button>
               </td>
             </tr>
           </table>
@@ -422,7 +422,7 @@ export default {
     },
     //attention aux nuls
     endPlusProche(time) {
-      this.eventList.sort((a, b) => a.timeDeb < b.timeDeb)
+      this.eventList.sort((a, b) => a.timeDeb - b.timeDeb)
       var eventPlusProche = new Flag(9, -1, 'red',"caca")
       this.eventList.forEach(
         event => {
@@ -439,7 +439,7 @@ export default {
 
     },
     endPlusProcheZone(time) {
-      this.zoneList.sort((a, b) => a.timeDeb < b.timeDeb)
+      this.zoneList.sort((a, b) => a.timeDeb - b.timeDeb)
       var eventPlusProche = new PartiesSong(9, -1, 'red')
       this.zoneList.forEach(
         event => {
@@ -509,6 +509,12 @@ export default {
   ;
 </script>
 <style>
+.removebtn{
+  width:20px;
+  height:20px;
+  background-image: url('/src/assets/croix.png'); 
+  background-size: cover;
+}
 .container2 {
   display: flex;
   flex-direction: row;
