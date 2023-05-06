@@ -6,7 +6,20 @@ export default class Flag {
       this.timeFin = null;
       
     }
+ 
     setTimeFin(tf){
         this.timeFin = tf
+    }
+    getScene(){
+      return this.scene
+    }
+    getTimeDeb(){
+      return this.timeDeb
+    }
+    getColor(){
+      return this.color
+    }
+    getTimeFin(){
+      return this.timeFin
     }
   }

@@ -46,6 +46,7 @@
       <ul>
         <li v-for="item in this.eventListComp" :key="item" @click="">
           {{ item.scene }}
+          {{ item.timeDeb }}
         </li>
 
       </ul>
@@ -80,7 +81,7 @@ export default {
         "5": 'purple',
         "6": 'pink',
       },
-      eventList: [Flag]
+      eventList: []
     };
   },
   watch: {
@@ -103,14 +104,26 @@ export default {
   methods: {
     handleKeyDown(event) {
       // Do something with the event, such as logging the key code
-      console.log("pute")
       console.log(this.SceneKey[1], event.keyCode)
       if (String(event.keyCode) === this.SceneKey[1]) {
-        console.log("caca")
-        this.eventList.push(new Flag(1, this.getTime(), this.colorScene[1]))
         this.endPlusProche(this.getTime())
+        this.eventList.push(new Flag(1, this.getTime(), this.colorScene[1]))
         console.log(this.eventList)
-        // console.log(this.eventList[0].arguments(timeDeb))
+          console.log(this.eventList[0].getTimeFin() )
+
+      }
+      if (String(event.keyCode) === this.SceneKey[2]) {
+        this.endPlusProche(this.getTime())
+        this.eventList.push(new Flag(2, this.getTime(), this.colorScene[2]))
+        console.log(this.eventList)
+          console.log(this.eventList[0].getTimeFin() )
+
+      }
+      if (String(event.keyCode) === this.SceneKey[3]) {
+        this.endPlusProche(this.getTime())
+        this.eventList.push(new Flag(3, this.getTime(), this.colorScene[3]))
+        console.log(this.eventList)
+          console.log(this.eventList[0].getTimeFin() )
 
       }
     },
@@ -136,8 +149,24 @@ export default {
     valueChangedHandler(speedval) {
       this.setSpeed(speedval / 100)
     },
+    //attention aux nuls
     endPlusProche(time){
-      // this.eventList.sort((a,b) => a.)
+      this.eventList.sort((a,b) => a.getTimeDeb()<b.getTimeDeb())
+     var eventPlusProche = new Flag(9,-1,'red')
+      this.eventList.forEach(
+        event => {
+          console.log(event.getTimeFin())
+          if((event.getTimeFin()>eventPlusProche.getTimeFin() && event.getTimeFin()<time && String(event.getTimeFin())!=='null') || String(event.getTimeFin())==='null'){
+
+            eventPlusProche= event
+          }
+        }
+      )
+      if( eventPlusProche.getTimeDeb()!==-1){
+          console.log("c bon")
+          eventPlusProche.setTimeFin(time)
+      }
+
     },
     onFileChange(event) {
       const file = event.target.files[0];
