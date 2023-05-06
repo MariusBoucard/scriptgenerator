@@ -7,8 +7,10 @@
       v-model="seekValue"
       @change="onSeek"
     /> -->
-  <div style="text-align: center;">
-    <h1> Script Helper</h1>
+  <div style="text-align: center;width:80%;margin:auto">
+
+    <h1 style="display:inline-block"> Script Helper</h1>
+    <button class="button" @click="this.$emit('settingsDisplay')">Settings</button>
     <div>
       <ol class="ol-days">
         <li v-for="item in this.songPath" :key="item" @click="this.launchFile(item)">
@@ -132,13 +134,24 @@ import Song from '@/class/Song'
 
 export default {
   mounted() {
-
+    
+   
+    
+ 
     this.audioPlayer = this.$refs.audioPlayer;
     console.log(localStorage.getItem('songList'))
     if (localStorage.getItem('songList') !== null) {
 
       this.songPath = JSON.parse(localStorage.getItem('songList'))
     }
+    this.$emit('colorZone', this.colorZone)
+  },
+  props : {
+    colorZone : {require :  true, type : Object},
+    songZoneName :  {require :  true, type : Object},
+    colorScene : {require :  true, type :   Object},
+    SceneKey : {require :  true, type : Object},
+    ZoneKey :  {require :  true, type : Object}
   },
   data() {
     return {
@@ -147,46 +160,7 @@ export default {
       speed: 100,
       songPath: [],
       songPlaying: "",
-      ZoneKey: {
-        "1": '65',
-        "2": '90',
-        "3": '69',
-        "4": '82',
-        "5": '84',
-        "6": '89',
-      },
-      SceneKey: {
-        "1": '49',
-        "2": '50',
-        "3": '51',
-        "4": '52',
-        "5": '53',
-        "6": '54',
-      },
-      colorScene: {
-        "1": 'green',
-        "2": 'orange',
-        "3": 'red',
-        "4": 'yellow',
-        "5": 'purple',
-        "6": 'pink',
-      },
-      colorZone: {
-        "1": 'green',
-        "2": 'orange',
-        "3": 'red',
-        "4": 'yellow',
-        "5": 'purple',
-        "6": 'pink',
-      },
-      songZoneName: {
-        "1": 'intro',
-        "2": 'verse',
-        "3": 'chorus',
-        "4": 'bridge',
-        "5": 'solo',
-        "6": 'transition',
-      },
+      
       totalTime: 0,
       eventList: [],
       zoneList: [],
@@ -257,6 +231,13 @@ export default {
     }
   },
   methods: {
+    colorZoneUpdate(event){
+      console.log(event)
+    },
+    setColorZone(obj){
+      console.log("faire set" + obj)
+      this.$emit('colorZone',this.colorZone)
+    },
     downloadCSV(event, zone) {
       const csv = this.convertToCSV(event, zone);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -304,6 +285,8 @@ export default {
       var toRemove = this.zoneList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.zoneList.splice(toRemove, 1)
     },
+
+
     handleKeyDown(event) {
       // Do something with the event, such as logging the key code
       console.log("Eventcode " + event.keyCode)
@@ -642,6 +625,15 @@ input[type="file"] {
   position: relative;
   margin: 0;
   padding: 0;
+}
+.button{
+  margin:20px;
+  background-color: lightgreen;
+  box-shadow: none;
+  border:#00ab97;
+  border-radius: 5px;
+  min-width: 80px;
+  min-height: 30px;
 }
 
 .buttonbis {
