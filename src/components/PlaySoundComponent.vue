@@ -8,6 +8,7 @@
       @change="onSeek"
     /> -->
   <div style="text-align: center;">
+    <h1> Script Helper</h1>
     <div>
       <ol class="ol-days">
         <li v-for="item in this.songPath" :key="item" @click="this.launchFile(item)">
@@ -113,9 +114,9 @@
           </table>
         </div>
 
-        <button style="background-color: red; width : 100px" @click="downloadCSV(this.eventList, this.zoneList)"></button>
       </div>
 
+      <button style="background-color: rgb(158, 158, 158); width : 100px; height : 30px" @click="downloadCSV(this.eventList, this.zoneList)"> Export as csv</button>
 
 
 
@@ -210,11 +211,16 @@ export default {
     zoneListComp() {
       return this.zoneList
     },
+    duration(){
+      
+
+      return this.totalTime
+    },
     timelineZones() {
       return this.zoneList.map((element, index) => {
         const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
         const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
-        const totalTime = this.audioPlayer.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
+        const totalTime = this.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
@@ -232,7 +238,8 @@ export default {
       return this.eventList.map((element, index) => {
         const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
         const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
-        const totalTime = this.audioPlayer.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
+        const totalTime = this.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
+        console.log(this.audioPlayer.duration)
         console.log(startTime)
         console.log(totalTime)
         const startPercent = (startTime / totalTime) * 100;
@@ -402,6 +409,9 @@ export default {
         this.audioPlayer.src = event.target.result;
 
       };
+      this.audioPlayer.addEventListener('loadedmetadata', () => {
+        this.totalTime = this.audioPlayer.duration
+});
       this.eventList = file.eventList
       this.zoneList = file.zoneList
 
@@ -515,7 +525,7 @@ export default {
   height: 50px;
   position: relative;
 
-  background-color: red;
+  background-color: rgb(197, 197, 197);
 }
 
 
