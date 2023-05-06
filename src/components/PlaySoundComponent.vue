@@ -126,9 +126,16 @@
 <script>
 import Flag from '@/class/Flag';
 import PartiesSong from '@/class/PartiesSong'
+import Song from '@/class/Song'
 export default {
-  mount(){
+  mounted(){
+
+    this.audioPlayer = this.$refs.audioPlayer;
+    console.log(localStorage.getItem('songList'))
+    if(localStorage.getItem('songList') !== null){
+
       this.songPath = JSON.parse(localStorage.getItem('songList'))
+    }
   },
   data() {
     return {
@@ -240,6 +247,7 @@ export default {
   },
   methods: {
     removeEvent(item) {
+      
       // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
       var toRemove = this.eventList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.eventList.splice(toRemove, 1)
@@ -321,6 +329,16 @@ export default {
         this.zoneList.push(new PartiesSong(this.songZoneName[6], this.getTime(), this.colorZone[6]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
       }
+
+      this.saveElements()
+    },
+    saveElements(){
+      //Find the song we are working on
+      var found = this.songPath.find( song => this.songPlaying === song.name)
+      console.log(found)
+      found.setEventList(this.eventList)
+      found.setZoneList(this.zoneList)
+      localStorage.setItem('songList',JSON.stringify(this.songPath))
     },
     getTime() {
       // const audioElement = this.$refs.audioPlayer;
@@ -330,16 +348,20 @@ export default {
     launchFile(file) {
 
       const reader = new FileReader();
-      console.log(file)
       this.songPlaying = file.name
 
+      const songURL = `file://${file.path}`;
+       this.audioPlayer.src = songURL;
+
       reader.onload = (event) => {
-        audioPlayer = this.$refs.audioPlayer;
-        audioPlayer.src = event.target.result;
+        // this.audioPlayer = this.$refs.audioPlayer;
+        this.audioPlayer.src = event.target.result;
 
       };
+      this.eventList = file.eventList
+      this.zoneList = file.zoneList
 
-      reader.readAsDataURL(file);
+      // reader.readAsDataURL(file.path);
     },
     valueChangedHandler(speedval) {
       this.setSpeed(speedval / 100)
@@ -378,12 +400,15 @@ export default {
       }
 
     },
+    /*
+    When a new file is loaded
+    */
     onFileChange(event) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      this.songPath.push(file.path)
+      this.songPath.push(new Song(file.name,file.path,[],[]))
       this.songPlaying = file.name
-      this.audioPlayer = this.$refs.audioPlayer; // Get a reference to the audio player
+       // Get a reference to the audio player
       localStorage.setItem('songList',JSON.stringify(this.songPath))
 
       reader.onload = (event) => {
