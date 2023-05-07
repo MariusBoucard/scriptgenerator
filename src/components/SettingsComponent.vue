@@ -2,20 +2,23 @@
 <div class="settingscomp" style="margin-top: 0px;">
 <!-- Display the zone keys -->
 <!-- put descriptif scenes as well -->
+
+
 <h2>Color for differents Zones</h2>
 
     <ul style="list-style: none;">
         <li v-for="color in colorZoneComp"  > Zone n° {{ color.id }} : 
-<input type="color"   :value=color.value  @input="updateColorScene(color.id,$event.target.value)">
+<input type="color"   :value=color.value  @input="updateColorZone(color.id,$event.target.value)"> | {{ String.fromCharCode(this.ZoneKey[color.id]) }}
 </li>
     </ul>
 
     <h2>Color for differents scenes</h2>
 <ul style="list-style: none;">
         <li v-for="color in colorSceneComp"  >Scene n° {{ color.id }} : 
-<input type="color"  :value=color.value  @input="updateZoneName(color.id,$event.target.value)">
+<input type="color"  :value=color.value  @input="updateColorScene(color.id,$event.target.value)">  | {{ String.fromCharCode(this.SceneKey[color.id]) }}
 </li>
     </ul>
+    <h2>Name of differents zones</h2>
     <ul style="list-style: none;">
         <li v-for="text in songZoneNameComp"  >
             Zone n° {{ text.id }}       <textarea :value="text.value" @input="updateZoneName(text.id,$event.target.value)"></textarea>

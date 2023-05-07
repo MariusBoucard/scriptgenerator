@@ -9,6 +9,7 @@
                         :colorScene=colorScene
                         :SceneKey=SceneKey
                         :ZoneKey=ZoneKey 
+
                         :class="this.showSettings ? 'reduit' : 'plein'"
                         @settingsDisplay = "this.showSettings = !this.showSettings"
                         ></PlaySoundComponent> 
@@ -18,7 +19,8 @@
                         <SettingsComponent v-show="this.showSettings" :colorZone="this.colorZone"
                         :colorScene="this.colorScene"
                         :songZoneName="this.songZoneName"
-    
+                        :SceneKey=SceneKey
+                        :ZoneKey=ZoneKey 
     
     @colorSceneUpdate="updateColorScene($event)"
     @colorZoneUpdate="updateColorZone($event)"
@@ -109,7 +111,7 @@ methods : {
 .reduit{
   display: inline-block;
   width:80%;
-  margin:0px !important;
+  margin:auto !important;
 }
 .plein{
   display: inline-block;
