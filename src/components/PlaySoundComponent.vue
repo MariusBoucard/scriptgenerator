@@ -43,6 +43,8 @@
 
     <div class="timeline">
       <div v-for="zone in timelineZones" :key="zone.id" :style="zone.style"></div>
+       <div class="current-time-bar" :style="currentTimeBarStyle"></div>
+
     </div>
 
     <h2> Decoupage scenes </h2>
@@ -139,6 +141,10 @@ export default {
     
  
     this.audioPlayer = this.$refs.audioPlayer;
+    this.audioPlayer.addEventListener('timeupdate', () => {
+      this.currentTime = this.audioPlayer.currentTime;
+      this.duration = this.audioPlayer.duration;
+    });
     console.log(localStorage.getItem('songList'))
     if (localStorage.getItem('songList') !== null) {
 
@@ -176,6 +182,21 @@ export default {
     document.addEventListener('keydown', this.handleKeyDown);
   },
   computed: {
+    currentTimeBarStyle() {
+      // if(this.audioPlayer === undefined){
+      //   return {
+      //   height: `100px`,
+      //   left: `50%`,
+      // };
+      // }
+      const barHeight = 100; // change as needed
+      const leftPosition = (this.currentTime / this.duration) * 100;
+      console.log(leftPosition)
+      return {
+        height: `${barHeight}%`,
+        left: `${leftPosition}%`,
+      };
+    },
     oldPath() {
       return this.songPath
     },
@@ -222,6 +243,7 @@ export default {
         return {
           id: index,
           style: {
+            height:'100%',
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
             backgroundColor: element.color // assuming you have a property called "color" on your element
@@ -529,6 +551,14 @@ export default {
   height: 20px;
   margin: auto;
   border-radius: 5%;
+}
+.current-time-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px; /* change as needed */
+  background-color: rgb(0, 0, 0); /* change as needed */
+  z-index: 99;
 }
 
 #tab td,
