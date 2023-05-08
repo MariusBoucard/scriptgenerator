@@ -1,8 +1,8 @@
 export default class PartiesSong {
-  constructor(partie,timeDeb,color) {
+  constructor(partie,timeDeb,timeEnd,color) {
     this.partie = partie;
     this.timeDeb = timeDeb
-    this.timeFin = null;
+    this.timeFin = timeEnd;
     this.color= color;
    
     

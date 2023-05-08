@@ -1,8 +1,8 @@
 export default class Flag {
-    constructor(scene,timeDeb,color,zone) {
+    constructor(scene,timeDeb,timeFin,color,zone) {
       this.scene = scene;
       this.timeDeb = timeDeb
-      this.timeFin = null;
+      this.timeFin = timeFin;
       this.color= color;
       this.zone = zone;
       

@@ -79,7 +79,16 @@
 
             <tr v-for="item in this.zoneListComp" :key="item">
 
-              <td>{{ item.partie }}</td>
+              <td>
+                <!-- todo in here -->
+                  <select  @change="setZoneName(item,$event.target.value)"> 
+                    <option value="{{item.partie}}" selected> {{ item.partie }}</option>
+
+                    <option v-for="zoneName in zoneNameComp" :value="zoneName.value">{{ zoneName.value }}</option>
+                  
+                  </select>
+
+              </td>
               <td>{{ item.timeDeb }}</td>
               <td>{{ item.timeFin }}</td>
               <td>
@@ -182,13 +191,14 @@ export default {
     document.addEventListener('keydown', this.handleKeyDown);
   },
   computed: {
+    zoneNameComp(){
+      if(this.songZoneName!== null){
+                  return this.formatAsArray(this.songZoneName)
+              }
+
+    },
     currentTimeBarStyle() {
-      // if(this.audioPlayer === undefined){
-      //   return {
-      //   height: `100px`,
-      //   left: `50%`,
-      // };
-      // }
+     
       const barHeight = 100; // change as needed
       const leftPosition = (this.currentTime / this.duration) * 100;
       console.log(leftPosition)
@@ -253,6 +263,47 @@ export default {
     }
   },
   methods: {
+    getTimeFinScene(time){
+      var oldTimeDeb = 100000
+      this.eventList.forEach(zone =>{ if(zone.timeDeb > time && zone.timeDeb < oldTimeDeb)
+      {
+        oldTimeDeb = zone.timeDeb
+      }})
+      if(oldTimeDeb !== 100000){
+        return oldTimeDeb
+      } else {
+        return null
+      }
+    },
+    getTimeFinZone(time){
+      var oldTimeDeb = 100000
+      this.zoneList.forEach(zone =>{ if(zone.timeDeb > time && zone.timeDeb < oldTimeDeb)
+      {
+        oldTimeDeb = zone.timeDeb
+      }})
+      if(oldTimeDeb !== 100000){
+        return oldTimeDeb
+      } else {
+        return null
+      }
+    },
+    setZoneName(item,event){
+      console.log(item,event)
+      var find = this.zoneList.find(elem => elem.timeDeb === item.timeDeb )
+      find.partie=event
+    },
+    formatAsArray(obj){
+            var keys = Object.keys(obj);
+            
+            var formattedArray = []
+            keys.forEach(
+                attribute => {
+                    formattedArray.push({ "id" : attribute , "value" : obj[attribute] })
+                }
+
+            )
+            return formattedArray
+        },
     colorZoneUpdate(event){
       console.log(event)
     },
@@ -315,70 +366,73 @@ export default {
       if (String(event.keyCode) === this.SceneKey[1]) {
         console.log("scene 1 added")
         this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(1, this.getTime(), this.colorScene[1]))
+        this.eventList.push(new Flag(1, this.getTime() ,this.getTimeFinScene(this.getTime()),this.colorScene[1]))
 
       }
       if (String(event.keyCode) === this.SceneKey[2]) {
         console.log("scene 2 added")
 
         this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(2, this.getTime(), this.colorScene[2]))
+        this.eventList.push(new Flag(2, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[2]))
 
       }
       if (String(event.keyCode) === this.SceneKey[3]) {
         console.log("scene 3 added")
         this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(3, this.getTime(), this.colorScene[3]))
+        this.eventList.push(new Flag(3, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[3]))
       }
       if (String(event.keyCode) === this.SceneKey[4]) {
         console.log("scene 3 added")
         this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(4, this.getTime(), this.colorScene[4]))
+        this.eventList.push(new Flag(4, this.getTime(), this.getTimeFinScene(this.getTime()),this.colorScene[4]))
       }
       if (String(event.keyCode) === this.SceneKey[5]) {
         console.log("scene 3 added")
         this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(5, this.getTime(), this.colorScene[5]))
+        this.eventList.push(new Flag(5, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[5]))
       }
       if (String(event.keyCode) === this.SceneKey[6]) {
         console.log("scene 3 added")
         this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(6, this.getTime(), this.colorScene[6]))
+        this.eventList.push(new Flag(6, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[6]))
       }
 
 
       if (String(event.keyCode) === this.ZoneKey[1]) {
         this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[1], this.getTime(), this.colorZone[1]))
+        this.getTimeFinZone(this.getTime())
+        this.zoneList.push(new PartiesSong(this.songZoneName[1], this.getTime(),        this.getTimeFinZone(this.getTime())
+,        this.colorZone[1]))
+
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
         console.log(this.zoneList)
       }
       if (String(event.keyCode) === this.ZoneKey[2]) {
         this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[2], this.getTime(), this.colorZone[2]))
+        this.zoneList.push(new PartiesSong(this.songZoneName[2], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[2]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
         console.log(this.zoneList)
       }
       if (String(event.keyCode) === this.ZoneKey[3]) {
         this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[3], this.getTime(), this.colorZone[3]))
+        this.zoneList.push(new PartiesSong(this.songZoneName[3], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[3]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
         console.log(this.zoneList)
       }
       if (String(event.keyCode) === this.ZoneKey[4]) {
         this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[4], this.getTime(), this.colorZone[4]))
+        this.zoneList.push(new PartiesSong(this.songZoneName[4], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[4]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
         console.log(this.zoneList)
       }
       if (String(event.keyCode) === this.ZoneKey[5]) {
         this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[5], this.getTime(), this.colorZone[5]))
+        this.zoneList.push(new PartiesSong(this.songZoneName[5], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[5]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
       }
       if (String(event.keyCode) === this.ZoneKey[6]) {
         this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[6], this.getTime(), this.colorZone[6]))
+        this.zoneList.push(new PartiesSong(this.songZoneName[6], this.getTime(),    this.getTimeFinZone(this.getTime()),this.colorZone[6]))
         //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
       }
 
@@ -432,8 +486,9 @@ export default {
       this.eventList.forEach(
         event => {
           console.log(event.timeFin)
-          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') || String(event.timeFin) === 'null') {
-
+          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') 
+          || (String(event.timeFin) === 'null' && String(event.timeDeb) <time )
+          ||  (String(event.timeFin) > time && String(event.timeDeb) < time )) {
             eventPlusProche = event
           }
         }
@@ -448,8 +503,9 @@ export default {
       var eventPlusProche = new PartiesSong(9, -1, 'red')
       this.zoneList.forEach(
         event => {
-          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') || String(event.timeFin) === 'null') {
-
+          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') 
+          || (String(event.timeFin) === 'null' && String(event.timeDeb) <time )
+          ||  (String(event.timeFin) > time && String(event.timeDeb) < time )) {
             eventPlusProche = event
           }
         }

@@ -1,7 +1,17 @@
 <template>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-  <div style="width:100%;">
+  <div style="width:100%;margin: none; padding:none">
+    <nav>
+  <ul>
+    <li><a href="#">Synopsis</a></li>
+    <li><a href="#">Actors</a></li>
+    <li><a href="#">TimeLine</a></li>
+    <li><a href="#">Scene Description</a></li>
+  </ul>
+</nav>
+
     <div >
+      <ActorsComponent></ActorsComponent>
      
 
     <PlaySoundComponent :colorZone=colorZone
@@ -36,6 +46,7 @@
 </template>
 
 <script>
+import ActorsComponent from './components/ActorsComponent.vue';
 import HelloWorld from './components/HelloWorld.vue'
 import PlaySoundComponent from './components/PlaySoundComponent.vue';
 import SettingsComponent from './components/SettingsComponent.vue';
@@ -45,7 +56,8 @@ export default {
   components: {
     HelloWorld,
     PlaySoundComponent,
-    SettingsComponent
+    SettingsComponent,
+    ActorsComponent
 },
 methods : {
   updateColorZone(event){
@@ -132,4 +144,33 @@ methods : {
   color: #2c3e50;
   margin-top: 0px;
 }
+
+
+// Navbar css
+nav {
+  background-color: #333;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav li {
+  margin: 0 10px;
+}
+
+nav a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+}
+
+nav a:hover {
+  background-color: #555;
+}
+
 </style>
