@@ -11,8 +11,8 @@
 </nav>
 
     <div >
-      <SynopsisComponent></SynopsisComponent>
-
+      <!-- <SynopsisComponent></SynopsisComponent> -->
+      <CostumesComponent></CostumesComponent>
 
       <ActorsComponent v-show="false"></ActorsComponent>
      
@@ -50,6 +50,7 @@
 
 <script>
 import ActorsComponent from './components/ActorsComponent.vue';
+import CostumesComponent from './components/CostumesComponent.vue';
 import HelloWorld from './components/HelloWorld.vue'
 import PlaySoundComponent from './components/PlaySoundComponent.vue';
 import SettingsComponent from './components/SettingsComponent.vue';
@@ -62,7 +63,8 @@ export default {
     PlaySoundComponent,
     SettingsComponent,
     ActorsComponent,
-    SynopsisComponent
+    SynopsisComponent,
+    CostumesComponent
 },
 methods : {
   updateColorZone(event){
