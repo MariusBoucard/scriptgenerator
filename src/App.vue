@@ -11,10 +11,13 @@
 </nav>
 
     <div >
-      <ActorsComponent></ActorsComponent>
+      <SynopsisComponent></SynopsisComponent>
+
+
+      <ActorsComponent v-show="false"></ActorsComponent>
      
 
-    <PlaySoundComponent :colorZone=colorZone
+    <PlaySoundComponent v-show="false" :colorZone=colorZone
                         :songZoneName=songZoneName
                         :colorScene=colorScene
                         :SceneKey=SceneKey
@@ -50,6 +53,7 @@ import ActorsComponent from './components/ActorsComponent.vue';
 import HelloWorld from './components/HelloWorld.vue'
 import PlaySoundComponent from './components/PlaySoundComponent.vue';
 import SettingsComponent from './components/SettingsComponent.vue';
+import SynopsisComponent from './components/SynopsisComponent.vue';
 
 export default {
   name: 'App',
@@ -57,7 +61,8 @@ export default {
     HelloWorld,
     PlaySoundComponent,
     SettingsComponent,
-    ActorsComponent
+    ActorsComponent,
+    SynopsisComponent
 },
 methods : {
   updateColorZone(event){
@@ -73,7 +78,7 @@ methods : {
 },
   data() {
     return {
-      showSettings : true,
+      showSettings : false,
       ZoneKey: {
         "1": '65',
         "2": '90',

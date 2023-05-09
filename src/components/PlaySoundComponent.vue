@@ -291,6 +291,9 @@ export default {
       console.log(item,event)
       var find = this.zoneList.find(elem => elem.timeDeb === item.timeDeb )
       find.partie=event
+      var array = this.formatAsArray(this.songZoneName)
+      var arrayObj = array.find(tuple => tuple.value === event)
+      find.color = this.colorZone[arrayObj.id]
     },
     formatAsArray(obj){
             var keys = Object.keys(obj);
