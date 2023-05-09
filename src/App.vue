@@ -3,21 +3,22 @@
   <div style="width:100%;margin: none; padding:none">
     <nav>
   <ul>
-    <li><a href="#">Synopsis</a></li>
-    <li><a href="#">Actors</a></li>
-    <li><a href="#">TimeLine</a></li>
-    <li><a href="#">Scene Description</a></li>
+    <li> <a @click="updateShow('Synopsis')">Synopsis</a></li>
+    <li><a @click="updateShow('Actors')">Actors</a></li>
+    <li><a @click="updateShow('Costumes')">Costumes</a></li>
+    <li><a @click="updateShow('PlaySound')">Timeline</a></li>
   </ul>
 </nav>
 
     <div >
-      <!-- <SynopsisComponent></SynopsisComponent> -->
-      <CostumesComponent></CostumesComponent>
+      <CanvasComponent></CanvasComponent>
+      <SynopsisComponent v-show="this.showComponentObject['Synopsis']"></SynopsisComponent>
+      <CostumesComponent v-show="this.showComponentObject['Costumes']"></CostumesComponent>
 
-      <ActorsComponent v-show="false"></ActorsComponent>
+      <ActorsComponent v-show="this.showComponentObject['Actors']"></ActorsComponent>
      
 
-    <PlaySoundComponent v-show="false" :colorZone=colorZone
+    <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" :colorZone=colorZone
                         :songZoneName=songZoneName
                         :colorScene=colorScene
                         :SceneKey=SceneKey
@@ -49,6 +50,7 @@
 </template>
 
 <script>
+import CanvasComponent from './components/CanvasComponent.vue'
 import ActorsComponent from './components/ActorsComponent.vue';
 import CostumesComponent from './components/CostumesComponent.vue';
 import HelloWorld from './components/HelloWorld.vue'
@@ -64,9 +66,25 @@ export default {
     SettingsComponent,
     ActorsComponent,
     SynopsisComponent,
-    CostumesComponent
+    CostumesComponent,
+    CanvasComponent
+},
+computed : {
+
 },
 methods : {
+  updateShow(name){
+      var keys = Object.keys(this.showComponentObject)
+      keys.forEach(key => {
+        if(key === name){
+          this.showComponentObject[key]= true
+        } else{
+          this.showComponentObject[key]= false
+
+        }
+      })
+      this.showSettings=false
+  },
   updateColorZone(event){
   this.colorZone[event.id] = event.value
   },
@@ -80,6 +98,14 @@ methods : {
 },
   data() {
     return {
+      currentTab : "Synopsis",
+      showComponentObject : {
+        "Synopsis" : true,
+        "Actors" : false,
+        "Costumes" : false,
+        "PlaySound" : false,
+        "Settings" : false
+      },
       showSettings : false,
       ZoneKey: {
         "1": '65',

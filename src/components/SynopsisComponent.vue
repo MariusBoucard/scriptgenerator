@@ -1,5 +1,5 @@
 <template>
-    <div style="width:100%;height:100%;background-color: green;">
+    <div style="width:80%;height:100vh;background-color: ;margin:auto">
         <h2>Write your synopsis in here</h2>
         <MdEditor v-model="text" language="en-US" />
                   <!-- <div v-html=""></div> -->
