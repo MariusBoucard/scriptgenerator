@@ -42,7 +42,11 @@
 
 
 
-      <SettingsComponent v-show="this.showSettings" :colorZone="this.colorZone" :colorScene="this.colorScene"
+      <SettingsComponent v-show="this.showSettings" 
+        :colorZone="this.colorZone" 
+        :colorScene="this.colorScene"
+        :usableZoneList="this.scriptData.usableZoneList"
+        :usablePlanList="this.scriptData.usablePlanList"
         :songZoneName="this.songZoneName" :SceneKey=SceneKey :ZoneKey=ZoneKey @colorSceneUpdate="updateColorScene($event)"
         @colorZoneUpdate="updateColorZone($event)" @zoneNameUpdate="updateZoneName($event)"
         :class="this.showSettings ? 'settings' : ''"></SettingsComponent>
@@ -141,14 +145,18 @@ export default {
       this.showSettings = false
     },
     updateColorZone(event) {
-      this.colorZone[event.id] = event.value
+      var found = this.scriptData.usableZoneList.find(zone => zone.id === event.id)
+      found.color = event.value
+      console.log("found", found.color)
     },
     updateColorScene(event) {
-      this.colorScene[event.id] = event.value
+      var found = this.scriptData.usablePlanList.find(zone => zone.id === event.id)
+      found.color = event.value
+      console.log("prout")
     },
     updateZoneName(event) {
-      console.log(event)
-      this.songZoneName[event.id] = event.value
+      var found = this.scriptData.usableZoneList.find(zone => zone.id === event.id)
+      found.name = event.value
     },
     removeRoleActor(name, character) {
 
