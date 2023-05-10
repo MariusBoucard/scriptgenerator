@@ -6,11 +6,10 @@
             <div @click="actor.displayDetails =! actor.displayDetails" title="Display some more information about the author">
                 <p style="display:inline-block">{{ actor.name }} :</p>
                  <ul style="list-style: none; padding: 0; margin: 0;display:inline-block">
-  <li v-for="char in actor.role" style="  display: inline-block;  margin-right: 10px; "  @contextmenu="removeRoleActor(actor.name,char)" title="Right click to remove me">{{ char }}</li>
+  <li v-for="char in actor.role" style="  display: inline-block;  margin-right: 10px; "  @contextmenu="this.$emit('removeRoleActor',{ 'actor' : actor.name, 'role' : char})" title="Right click to remove me">{{ char }}</li>
 </ul>
 
-
-                  <button @click="removeActor(actor.name)">Remove actor</button>
+                  <button @click="this.$emit('removeActor',actor.name)">Remove actor</button>
             </div>
             <div v-show="actor.displayDetails">{{ actor.moreInfo }}</div>
      
@@ -21,7 +20,11 @@
         <div class="form-group">
             <input type="text" v-model="this.currentActor" placeholder="Actor name"/>
             <input type="text" v-model="this.currentCharacter"  placeholder="Character he will play"/>
-            <button @click="this.addActor">
+            <button @click="this.$emit('addActor', {
+              'currentActor' : this.currentActor,
+              'currentCharacter' : this.currentCharacter,
+              'currentInfo' : this.currentInfo
+            })">
                 Add it to list
             </button>
 
@@ -41,14 +44,17 @@
 import Actor from '@/class/Actor';
 
 export default{
+  props : {
+    actorList : {required : true, type : [Object]}
+  },
     mounted(){
         if(localStorage.getItem('actorList')!==null){
-            this.actorList =  JSON.parse(localStorage.getItem('actorList')).map(actorData => new Actor(actorData.name, actorData.role, actorData.moreInfo));
+            // this.actorList =  JSON.parse(localStorage.getItem('actorList')).map(actorData => new Actor(actorData.name, actorData.role, actorData.moreInfo));
         }
     },
     data(){
         return {
-            actorList : [],
+           
             currentActor:"",
             currentCharacter:"",
             currentInfo : ""
@@ -58,40 +64,7 @@ export default{
         storageUpdate(){
             localStorage.setItem('actorList',JSON.stringify(this.actorList))
         },
-        removeRoleActor(name,character){
-
-            var find = this.actorList.find(act => act.name===name)
-            find.removeRole(character)
-            this.storageUpdate()
-        },
-        addActor(){
-            
-            if(this.actorExist(this.currentActor)){
-                var actor = this.actorList.find(actor => actor.name === this.currentActor)
-                actor.addRole(this.currentCharacter)
-            } else {
-                this.actorList.push(new Actor(this.currentActor,[this.currentCharacter],this.currentInfo))
-            }
-            if(this.currentInfo !== ""){
-                var actor = this.actorList.find(actor => actor.name === this.currentActor)
-                actor.moreInfo = this.currentInfo
-            }
-            this.storageUpdate()
-        },
-        actorExist(name){
-            var kuk = this.actorList.find(actor => actor.name === this.currentActor)
-            if(kuk !== undefined){
-                return true
-            } else {
-                false
-            }
-        },
-        removeActor(name){
-            var found = this.actorList.find(ac => ac.name === name)
-            var ind = this.actorList.indexOf(found)
-            this.actorList.splice(ind,1)
-            this.storageUpdate()
-        }
+       
     }
 
 

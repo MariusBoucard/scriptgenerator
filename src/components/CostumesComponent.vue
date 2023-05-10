@@ -8,11 +8,11 @@
                  <ul style="list-style: none; padding: 0; margin: 0;display:inline-block">
 
   <li v-for="char in character.accessoire" style="  display: inline-block;  margin-right: 10px; "  
-  @contextmenu="removeAccessoireCharacter(character.name,char)" title="Right click to remove me">{{ char }}</li>
+  @contextmenu="this.$emit('removeAccessoireCharacter', { name : character.name, accessoire : char })" title="Right click to remove me">{{ char }}</li>
 </ul>
 
 
-                  <button @click="removeActor(character.name)">Remove actor</button>
+                  <button @click="this.$emit('removeCharacter',{ name : character.name})">Remove character</button>
             </div>
             <div v-show="character.displayDetails">{{ character.moreInfo }}</div>
      
@@ -23,7 +23,7 @@
         <div class="form-group">
             <input type="text" v-model="this.currentCharacter" placeholder="Actor name"/>
             <input type="text" v-model="this.currentCostume"  placeholder="Character he will play"/>
-            <button @click="this.addCostume">
+            <button @click="this.$emit('addCostume', { currentCharacter : this.currentCharacter, currentCostume : this.currentCostume, currentInfo : this.currentInfo})">
                 Add it to list
             </button>
 
@@ -43,55 +43,24 @@
 import Character from '@/class/Character';
 
 export default{
+  props :{
+    characterList : {
+      required : true, type : [Object]
+    }
+  },
     mounted(){
     
     },
     data(){
         return {
-            characterList : [],
             currentCharacter:"",
             currentCostume:"",
             currentInfo : ""
         }
     },
     methods : {
-        storageUpdate(){
-            localStorage.setItem('costumeList',JSON.stringify(this.characterList))
-        },
-        removeAccessoireCharacter(character,costume){
-          console.log(character)
-            var find = this.characterList.find(act => act.name===character)
-            find.removeAccessoire(costume)
-            this.storageUpdate()
-        },
-        addCostume(){
-            
-            if(this.characterExists(this.currentCharacter)){
-                var character = this.characterList.find(actor => actor.name === this.currentCharacter)
-                character.addAccessoire(this.currentCostume)
-            } else {
-                this.characterList.push(new Character(this.currentCharacter,[this.currentCostume],this.currentInfo))
-            }
-            if(this.currentInfo !== ""){
-                var actor = this.characterList.find(actor => actor.name === this.currentCharacter)
-                actor.moreInfo = this.currentInfo
-            }
-            this.storageUpdate()
-        },
-        characterExists(name){
-            var kuk = this.characterList.find(character => character.name === name)
-            if(kuk !== undefined){
-                return true
-            } else {
-                false
-            }
-        },
-        removeActor(name){
-            var found = this.characterList.find(ac => ac.name === name)
-            var ind = this.characterList.indexOf(found)
-            this.characterList.splice(ind,1)
-            this.storageUpdate()
-        }
+     
+        
     }
 
 

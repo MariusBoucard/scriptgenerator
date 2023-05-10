@@ -1,6 +1,6 @@
 <template>
     <div style="width:80%;height:100vh;background-color: ;margin:auto">
-        <h2>Write your synopsis in here</h2>
+        <h2 @click="test()">Write your synopsis for {{ this.title }} in here</h2>
         <MdEditor v-model="text" language="en-US" />
                   <!-- <div v-html=""></div> -->
     </div>
@@ -14,14 +14,23 @@ export default{
     components: {
     MdEditor
   },
+
+  props:{
+    synopsisText : { required : true , type : String},
+    title : { required : true , type : String}
+  },
   data() {
     return {
-         text : ref('# Hello Editor'),
-      markdown : '# This is a heading \n\nSome **bold** and *italic* text'
+      text : this.synopsisText,
     }},
     computed() {
    
-  }
+  },
+  methods: {
+    test(){
+      console.log(this.synopsisText)
+    }
+  },
 }
 </script>
 <style>

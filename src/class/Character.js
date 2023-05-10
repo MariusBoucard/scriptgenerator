@@ -14,7 +14,7 @@ export default class Character {
       return this.accessoire
     }
     addAccessoire(name){
-        if(!this.accessoire.contains(name)){
+        if(!this.accessoire.includes(name)){
 
             this.accessoire.push(name)
         }
