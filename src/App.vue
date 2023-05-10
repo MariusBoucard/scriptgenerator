@@ -7,28 +7,33 @@
         <li><a @click="updateShow('Actors')">Actors</a></li>
         <li><a @click="updateShow('Costumes')">Costumes</a></li>
         <li><a @click="updateShow('PlaySound')">Timeline</a></li>
-        <li><a @click="fart()">fart</a></li>
+        <li><a @click="updateShow('ZoneAndPlanSettings')">Settings </a></li>
       </ul>
     </nav>
 
     <div>
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
+      <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']" :zoneList=scriptData.usableZoneList :planList=scriptData.usablePlanList
+        @zoneUpdate="this.scriptData.usableZoneList = $event" @planUpdate="this.scriptData.usablePlanList = $event"
+        @deletePlan="this.deleteUsablePlan($event)" @deleteZone="this.deleteUsableZone($event)"
+        @changePlanColor="this.changePlanColor($event)" @changeZoneColor="this.changeZoneColor($event)"
+        @nameZoneChanged="this.nameZoneChanged($event)" @namePlanChanged="this.namePlanChanged($event)"
+        @descriptionPlanChanged="this.descriptionPlanChanged($event)"></ZoneAndPlanSettingsComponent>
+
+
+
 
       <SynopsisComponent v-show="this.showComponentObject['Synopsis']" :synopsisText=scriptData.synopsis
         :title=scriptData.title></SynopsisComponent>
 
-        <ActorsComponent v-show="this.showComponentObject['Actors']" :actor-list=scriptData.actorList
-        @addActor="this.addActor($event)"
-        @removeRoleActor="this.removeRoleActor($event.actor,$event.role)"
-        @removeActor="this.removeActor($event)"
-        ></ActorsComponent>
-        
-        <CostumesComponent v-show="this.showComponentObject['Costumes']"
-        :character-list=scriptData.characterList
+      <ActorsComponent v-show="this.showComponentObject['Actors']" :actor-list=scriptData.actorList
+        @addActor="this.addActor($event)" @removeRoleActor="this.removeRoleActor($event.actor, $event.role)"
+        @removeActor="this.removeActor($event)"></ActorsComponent>
+
+      <CostumesComponent v-show="this.showComponentObject['Costumes']" :character-list=scriptData.characterList
         @removeCharacter="this.removeCharacter($event.name)"
-        @removeAccessoireCharacter="this.removeAccessoireCharacter($event.name,$event.accessoire)"
-        @addCostume="this.addCostume($event)"
-        ></CostumesComponent>
+        @removeAccessoireCharacter="this.removeAccessoireCharacter($event.name, $event.accessoire)"
+        @addCostume="this.addCostume($event)"></CostumesComponent>
 
 
       <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" :colorZone=colorZone :songZoneName=songZoneName
@@ -60,6 +65,7 @@ import PlaySoundComponent from './components/PlaySoundComponent.vue';
 import SettingsComponent from './components/SettingsComponent.vue';
 import SynopsisComponent from './components/SynopsisComponent.vue';
 import Character from './class/Character';
+import ZoneAndPlanSettingsComponent from './components/ZoneAndPlanSettingsComponent.vue';
 
 export default {
   name: 'App',
@@ -70,12 +76,54 @@ export default {
     ActorsComponent,
     SynopsisComponent,
     CostumesComponent,
-    CanvasComponent
+    CanvasComponent,
+    ZoneAndPlanSettingsComponent
   },
   computed: {
 
   },
   methods: {
+
+    descriptionPlanChanged(evt) {
+      //TODO use id to handle border effect
+      var id = evt.id
+      this.scriptData.usablePlanList = evt.list
+      console.log("descPlanCHanged", this.scriptData.usablePlanList)
+    },
+    nameZoneChanged(evt) {
+      //TODO use id to handle border effect
+      var id = evt.id
+      this.scriptData.usableZoneList = evt.list
+      console.log("nameZoneChanges", this.scriptData.usableZoneList)
+    },
+    namePlanChanged(evt) {
+      //TODO use id to handle border effect
+      var id = evt.id
+      this.scriptData.usablePlanList = evt.list
+      console.log("namplanCanges", this.scriptData.usablePlanList)
+
+    },
+    changePlanColor(evt) {
+      //TODO use id to handle border effect
+      var id = evt.id
+      this.scriptData.usablePlanList = evt.list
+    },
+    changeZoneColor(evt) {
+      //TODO use id to handle border effect
+
+      var id = evt.id
+      this.scriptData.usableZoneList = evt.list
+    },
+    deleteUsablePlan(evt) {
+      //TODO better with border effect
+      this.scriptData.usablePlanList = evt
+    },
+    deleteUsableZone(evt) {
+      //TODO better with border effect
+
+      this.scriptData.usableZoneList = evt
+
+    },
     fart() {
       this.test = new Flag(1, 1.2, 1.5, "#000000")
       console.log(this.test)
@@ -134,40 +182,40 @@ export default {
       var ind = this.scriptData.actorList.indexOf(found)
       this.scriptData.actorList.splice(ind, 1)
     },
-    removeAccessoireCharacter(character,costume){
-          console.log(character)
-            var find = this.scriptData.characterList.find(act => act.name===character)
-            find.removeAccessoire(costume)
-            // this.storageUpdate()
-        },
-        addCostume(evt){
-            
-            if(this.characterExists(evt.currentCharacter)){
-                var character = this.scriptData.characterList.find(actor => actor.name === evt.currentCharacter)
-                character.addAccessoire(evt.currentCostume)
-            } else {
-                this.scriptData.characterList.push(new Character(evt.currentCharacter,[evt.currentCostume],evt.currentInfo))
-            }
-            if(evt.currentInfo !== ""){
-                var actor = this.scriptData.characterList.find(actor => actor.name === evt.currentCharacter)
-                actor.moreInfo = evt.currentInfo
-            }
-            // this.storageUpdate()
-        },
-        characterExists(name){
-            var kuk = this.scriptData.characterList.find(character => character.name === name)
-            if(kuk !== undefined){
-                return true
-            } else {
-                false
-            }
-        },
-        removeCharacter(name){
-            var found = this.scriptData.characterList.find(ac => ac.name === name)
-            var ind = this.scriptData.characterList.indexOf(found)
-            this.scriptData.characterList.splice(ind,1)
-            // this.storageUpdate()
-        }
+    removeAccessoireCharacter(character, costume) {
+      console.log(character)
+      var find = this.scriptData.characterList.find(act => act.name === character)
+      find.removeAccessoire(costume)
+      // this.storageUpdate()
+    },
+    addCostume(evt) {
+
+      if (this.characterExists(evt.currentCharacter)) {
+        var character = this.scriptData.characterList.find(actor => actor.name === evt.currentCharacter)
+        character.addAccessoire(evt.currentCostume)
+      } else {
+        this.scriptData.characterList.push(new Character(evt.currentCharacter, [evt.currentCostume], evt.currentInfo))
+      }
+      if (evt.currentInfo !== "") {
+        var actor = this.scriptData.characterList.find(actor => actor.name === evt.currentCharacter)
+        actor.moreInfo = evt.currentInfo
+      }
+      // this.storageUpdate()
+    },
+    characterExists(name) {
+      var kuk = this.scriptData.characterList.find(character => character.name === name)
+      if (kuk !== undefined) {
+        return true
+      } else {
+        false
+      }
+    },
+    removeCharacter(name) {
+      var found = this.scriptData.characterList.find(ac => ac.name === name)
+      var ind = this.scriptData.characterList.indexOf(found)
+      this.scriptData.characterList.splice(ind, 1)
+      // this.storageUpdate()
+    }
   },
   data() {
     return {
@@ -177,11 +225,20 @@ export default {
         actorList: [
           new Actor("Marius", ["Ballzzy", "Ballzzy Old"], "Il est super impressive")
         ],
-        characterList : [
-          new Character("Topin",['couilles'],"moreInfo")
+        characterList: [
+          new Character("Topin", ['couilles'], "moreInfo")
         ],
-        scenes: [],
-        plans: []
+        timeline: {
+          songPath: "",
+          sceneList: [],
+          planList: []
+        },
+        usableZoneList: [
+          { id: 0, name: 'intro', key: 65, color: "#33ff33" }
+        ],
+        usablePlanList: [
+          { id: 0, name: "dans les champs", description: 'c\'est la description du plan', key: 49, color: "#33ff33" }
+        ]
       },
       test: "prout",
       currentTab: "Synopsis",
@@ -190,7 +247,8 @@ export default {
         "Actors": false,
         "Costumes": false,
         "PlaySound": false,
-        "Settings": false
+        "Settings": false,
+        "ZoneAndPlanSettings" : false
       },
       showSettings: false,
       ZoneKey: {
