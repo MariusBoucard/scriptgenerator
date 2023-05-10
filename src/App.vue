@@ -7,11 +7,12 @@
     <li><a @click="updateShow('Actors')">Actors</a></li>
     <li><a @click="updateShow('Costumes')">Costumes</a></li>
     <li><a @click="updateShow('PlaySound')">Timeline</a></li>
+    <li><a @click="fart()">fart</a></li>
   </ul>
 </nav>
 
     <div >
-      <CanvasComponent></CanvasComponent>
+      <CanvasComponent :planimage=test ></CanvasComponent>
       <SynopsisComponent v-show="this.showComponentObject['Synopsis']"></SynopsisComponent>
       <CostumesComponent v-show="this.showComponentObject['Costumes']"></CostumesComponent>
 
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+import Flag from './class/Flag';
 import CanvasComponent from './components/CanvasComponent.vue'
 import ActorsComponent from './components/ActorsComponent.vue';
 import CostumesComponent from './components/CostumesComponent.vue';
@@ -73,6 +75,10 @@ computed : {
 
 },
 methods : {
+  fart(){
+    this.test = new Flag(1,1.2,1.5,"#000000")
+    console.log(this.test)
+  },
   updateShow(name){
       var keys = Object.keys(this.showComponentObject)
       keys.forEach(key => {
@@ -98,6 +104,7 @@ methods : {
 },
   data() {
     return {
+      test : {},
       currentTab : "Synopsis",
       showComponentObject : {
         "Synopsis" : true,
