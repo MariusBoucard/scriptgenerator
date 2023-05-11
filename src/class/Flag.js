@@ -7,13 +7,16 @@ export default class Flag {
       this.numeroDsZone = numeroDsZone
       this.timeDeb = timeDeb
       this.timeFin = timeFin;
+      this.description = "sceeneDesc"
       this.planImage = {
         ellipses : [],
         squares : [],
         arrows : [],
         lines : [],
         text : []
-      }
+      },
+      this.paroles = "Topinnnnnnn"
+      this.characters = []
       
     }
  

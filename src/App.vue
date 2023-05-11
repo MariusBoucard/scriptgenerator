@@ -8,10 +8,20 @@
         <li><a @click="updateShow('Costumes')">Costumes</a></li>
         <li><a @click="updateShow('PlaySound')">Timeline</a></li>
         <li><a @click="updateShow('ZoneAndPlanSettings')">Settings </a></li>
+        <li><a @click="updateShow('Scenes')">Scenes </a></li>
+
       </ul>
     </nav>
 
     <div>
+      <ScenesComponent v-show="this.showComponentObject['Scenes']"
+            :usableZoneList=scriptData.usableZoneList
+            :usablePlanList=scriptData.usablePlanList
+            :zoneList=scriptData.timeline.zoneList
+            :planList=scriptData.timeline.planList
+            :usableCharacterList=scriptData.characterList
+            @sceneUpdated="updateScene($event)"
+            ></ScenesComponent>
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
       <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']" :zoneList=scriptData.usableZoneList :planList=scriptData.usablePlanList
         @zoneUpdate="this.scriptData.usableZoneList = $event" @planUpdate="this.scriptData.usablePlanList = $event"
@@ -37,18 +47,23 @@
 
 
       <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" 
-        :colorZone=colorZone 
-        :songZoneName=songZoneName
-        :colorScene=colorScene 
-        :SceneKey=SceneKey 
-        :ZoneKey=ZoneKey 
+        
+        :songPathProp="this.scriptData.timeline.songPath"
 
         :visible="this.showComponentObject['PlaySound']"
 
         :usablePlanList=scriptData.usablePlanList
         :usableZoneList="scriptData.usableZoneList"
         :class="this.showSettings ? 'reduit' : 'plein'"
-        @settingsDisplay="this.showSettings = !this.showSettings"></PlaySoundComponent>
+        :planList=scriptData.timeline.planList
+        :listeZone=scriptData.timeline.zoneList
+
+        @settingsDisplay="this.showSettings = !this.showSettings"
+        @planUpdated="updatePlan($event)"
+        @zoneUpdated="updateZone($event)"
+        @fileLoad="fileLoad($event)"
+        
+        ></PlaySoundComponent>
 
 
 
@@ -80,6 +95,8 @@ import SettingsComponent from './components/SettingsComponent.vue';
 import SynopsisComponent from './components/SynopsisComponent.vue';
 import Character from './class/Character';
 import ZoneAndPlanSettingsComponent from './components/ZoneAndPlanSettingsComponent.vue';
+import PartiesSong from './class/PartiesSong';
+import ScenesComponent from './components/ScenesComponent.vue';
 
 export default {
   name: 'App',
@@ -91,51 +108,99 @@ export default {
     SynopsisComponent,
     CostumesComponent,
     CanvasComponent,
-    ZoneAndPlanSettingsComponent
-  },
+    ZoneAndPlanSettingsComponent,
+    ScenesComponent
+},
   computed: {
 
   },
   methods: {
+    save(){
+      localStorage.setItem('saveApp',JSON.stringify(this.scriptData))
+    },
+    load(){
+      if(localStorage.getItem('saveApp')){
+        this.scriptData =JSON.parse(localStorage.getItem('saveApp'))
+      }
+    },
+    updateScene(evt){
+      var scene = this.scriptData.timeline.planList.find(plan => plan.zone === evt.zone && plan.nbDsZone === evt.nbDsZone)
+      scene = evt
+      console.log("update Scene",this.scriptData.timeline.planList)
+      this.save()
+    },
+    updatePlan(evt){
+      this.scriptData.timeline.planList = evt
+      console.log("updatePlan",this.scriptData.timeline.planList)
+      this.save()
 
+
+    },
+    fileLoad(evt){
+      console.log("fileLoad",evt)
+      this.scriptData.timeline.songPath=evt
+      this.save()
+
+    },
+    updateZone(evt){
+      this.scriptData.timeline.zoneList = evt
+      console.log("updateZone",this.scriptData.timeline.zoneList)
+      this.save()
+
+
+    },
     descriptionPlanChanged(evt) {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usablePlanList = evt.list
       console.log("descPlanCHanged", this.scriptData.usablePlanList)
+      this.save()
+
     },
     nameZoneChanged(evt) {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usableZoneList = evt.list
       console.log("nameZoneChanges", this.scriptData.usableZoneList)
+      this.save()
+
     },
     namePlanChanged(evt) {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usablePlanList = evt.list
       console.log("namplanCanges", this.scriptData.usablePlanList)
+      this.save()
+
 
     },
     changePlanColor(evt) {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usablePlanList = evt.list
+      this.save()
+
     },
     changeZoneColor(evt) {
       //TODO use id to handle border effect
 
       var id = evt.id
       this.scriptData.usableZoneList = evt.list
+      this.save()
+
     },
     deleteUsablePlan(evt) {
       //TODO better with border effect
       this.scriptData.usablePlanList = evt
+      this.save()
+
     },
     deleteUsableZone(evt) {
       //TODO better with border effect
 
       this.scriptData.usableZoneList = evt
+      this.save()
+
 
     },
     fart() {
@@ -158,15 +223,20 @@ export default {
       var found = this.scriptData.usableZoneList.find(zone => zone.id === event.id)
       found.color = event.value
       console.log("found", found.color)
+      this.save()
+
     },
     updateColorScene(event) {
       var found = this.scriptData.usablePlanList.find(zone => zone.id === event.id)
       found.color = event.value
-      console.log("prout")
+      this.save()
+
     },
     updateZoneName(event) {
       var found = this.scriptData.usableZoneList.find(zone => zone.id === event.id)
       found.name = event.value
+      this.save()
+
     },
     removeRoleActor(name, character) {
 
@@ -241,24 +311,22 @@ export default {
         title: "someTitle",
         synopsis: "Synop",
         actorList: [
-          new Actor("Marius", ["Ballzzy", "Ballzzy Old"], "Il est super impressive")
+         
         ],
         characterList: [
-          new Character("Topin", ['couilles'], "moreInfo")
+         
         ],
         timeline: {
-          songPath: "",
-          sceneList: [],
+          songPath: [],
+          zoneList: [],
           planList: []
         },
         usableZoneList: [
-          { id: 0, name: 'intro', key: 49, color: "#33ff33" },
-          { id: 1, name: 'verse', key: 50, color: "#33ff99" }
+      
 
         ],
         usablePlanList: [
-          { id: 0, name: "dans les champs", description: 'c\'est la description du plan', key: 65, color: "#33ff33" },
-          { id: 1, name: "dans les champs", description: 'c\'est la description du plan', key: 90, color: "#33ff33" }
+         
 
         ]
       },
@@ -270,50 +338,14 @@ export default {
         "Costumes": false,
         "PlaySound": false,
         "Settings": false,
-        "ZoneAndPlanSettings" : false
+        "ZoneAndPlanSettings" : false,
+        "Scenes" : false
       },
       showSettings: false,
-      ZoneKey: {
-        "1": '65',
-        "2": '90',
-        "3": '69',
-        "4": '82',
-        "5": '84',
-        "6": '89',
-      },
-      SceneKey: {
-        "1": '49',
-        "2": '50',
-        "3": '51',
-        "4": '52',
-        "5": '53',
-        "6": '54',
-      },
-      colorScene: {
-        "1": '#33cc33',
-        "2": '#ff9900',
-        "3": '#ff3300',
-        "4": '#ffff00',
-        "5": '#f8e45c',
-        "6": '#ffccff',
-      },
-      colorZone: {
-        "1": '#33cc33',
-        "2": '#ff9900',
-        "3": '#ff3300',
-        "4": '#ffff00',
-        "5": '#f8e45c',
-        "6": '#ffccff',
-      },
-      songZoneName: {
-        "1": 'intro',
-        "2": 'verse',
-        "3": 'chorus',
-        "4": 'bridge',
-        "5": 'solo',
-        "6": 'transition',
-      },
     }
+  },
+  mounted(){
+    this.load()
   }
 }
 </script>

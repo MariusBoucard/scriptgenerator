@@ -8,16 +8,16 @@
                     <v-stage style="border : 5px solid black" ref="stage" :config="stageSize"
                         @mousedown="handleStageMouseDown" @touchstart="handleStageMouseDown">
                         <v-layer ref="layer">
-                            <v-rect v-for="item in squares" @dragmove="handleDragMove(item.type,item.name)" :key="item.name" :config="item"
+                            <v-rect v-for="item in squares" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.name" :config="item"
                                 @transformend="handleTransformEnd" />
-                            <v-text v-for="item in text" :key="item.id" @dragmove="handleDragMove(item.type,item.name)" :config="item" @transformend="handleTransformEnd" />
-                            <v-arrow v-for="item in arrows" @dragmove="handleDragMove(item.type,item.name)" :key="item.id" :config="item"
+                            <v-text v-for="item in text" :key="item.id" @dragmove="handleDragMove(item.type,item.name,$evt)" :config="item" @transformend="handleTransformEnd" />
+                            <v-arrow v-for="item in arrows" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.id" :config="item"
                                 @transformend="handleTransformEnd" />
 
-                            <v-line v-for="item in lines" @dragmove="handleDragMove(item.type,item.name)" :key="item.id" :config="item" @transformend="handleTransformEnd">
+                            <v-line v-for="item in lines" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.id" :config="item" @transformend="handleTransformEnd">
 
                             </v-line>
-                            <v-ellipse v-for="item in ellipses" @dragmove="handleDragMove(item.type,item.name)" :key="item.id" :config="item"
+                            <v-ellipse v-for="item in ellipses" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.id" :config="item"
                                 @transformend="handleTransformEnd">
 
                             </v-ellipse>
@@ -282,39 +282,55 @@ export default {
         addLine() {
             this.lines.push(
                 {
-
+                    type:"line",
                     x: 100,
                     y: 50,
+                    scaleX: 1,
+                    scaleY: 1,
+                    rotation:0,
                     points: [73, 70, 500, 20],
-                    name: 'line' + String(Math.floor(Math.random() * 1000000)),
+                    name: 'line' + String(Math.floor(Math.random() * 1000)),
                     stroke: 'black',
                     draggable: true,
                     hitStrokeWidth: 10
                 }
             )
         },
-        handleDragMove(evt){
-            switch (rect.type) {
+        handleDragMove(type,name,evt){
+
+            var rect = null
+            if(type === "line"){
+
+                rect = this.lines.find(sq => sq.name === name)
+                console.log(rect)
+                rect.rotation = evt.target.rotation();
+            rect.scaleX = evt.target.scaleX();
+            rect.scaleY = evt.target.scaleY();
+                rect.x = evt.target.x();
+                rect.y = evt.target.y();
+             
+                return
+            }
+            switch (type) {
                     case "square":
-                        var find = this.squares.find(sq => sq.name === rect.name)
-                        find = rect
+                        rect = this.squares.find(sq => sq.name === name)
                         break;
                     case "ellipse":
-                        var find = this.ellipses.find(sq => sq.name === rect.name)
-                        find = rect
+                        rect = this.ellipses.find(sq => sq.name === name)
                         break;
-                    case "line":
-                    var find = this.lines.find(sq => sq.name === rect.name)
-                        find = rect
-                        break;
+                    
                     case "text":
-                    var find = this.text.find(sq => sq.name === rect.name)
-                        find = rect
+                    rect = this.text.find(sq => sq.name === name)
                         break;
                     case "arrow":
-                    var find = this.arrow.find(sq => sq.name === rect.name)
-                        find = rect
+                    rect = this.arrow.find(sq => sq.name === name)
                         break;}
+                        console.log(evt)
+            rect.x = evt.target.x();
+            rect.y = evt.target.y();
+            rect.rotation = evt.target.rotation();
+            rect.scaleX = evt.target.scaleX();
+            rect.scaleY = evt.target.scaleY();
         },
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node

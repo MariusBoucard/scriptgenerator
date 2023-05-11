@@ -13,7 +13,7 @@
     <button class="button" @click="this.$emit('settingsDisplay')">Settings</button>
     <div>
       <ol class="ol-days">
-        <li v-for="item in this.songPath" :key="item" @click="this.launchFile(item)">
+        <li v-for="item in this.songPathComp" :key="item" @click="this.launchFile(item)">
           {{ item.name }}
         </li>
       </ol>
@@ -43,7 +43,7 @@
 
     <div class="timeline">
       <div v-for="zone in timelineZones" :key="zone.id" :style="zone.style"></div>
-       <div class="current-time-bar" :style="currentTimeBarStyle"></div>
+      <div class="current-time-bar" :style="currentTimeBarStyle"></div>
 
     </div>
 
@@ -82,12 +82,12 @@
 
               <td>
                 <!-- todo in here -->
-                  <select  @change="setZoneName(item,$event.target.value)"> 
-                    <option value="{{zoneNameFromId(item.id)}}" selected> {{ zoneNameFromId(item.id) }}</option>
+                <select @change="setZoneName(item, $event.target.value)">
+                  <option value="{{zoneNameFromId(item.id)}}" selected> {{ zoneNameFromId(item.id) }}</option>
 
-                    <option v-for="zoneName in usableZoneList" :value="zoneName.id">{{ zoneName.name }}</option>
-                  
-                  </select>
+                  <option v-for="zoneName in usableZoneList" :value="zoneName.id">{{ zoneName.name }}</option>
+
+                </select>
 
               </td>
               <td>{{ item.numero }}</td>
@@ -97,7 +97,7 @@
                 <div class="color-display" :style='{ backgroundColor: colorZoneFromId(item.id) }'></div>
               </td>
               <td>
-                <button @click="removeZone(item)" class="removebtn" ></button>
+                <button @click="removeZone(item)" class="removebtn"></button>
               </td>
             </tr>
           </table>
@@ -119,7 +119,7 @@
             <tr v-for="item in this.eventListComp" :key="item">
 
               <td>{{ item.id }}</td>
-              <td>{{ item.zoneId }}</td>
+              <td>{{ item.zone }}</td>
               <td>{{ item.numeroDsZone }}</td>
               <td>{{ item.timeDeb }}</td>
               <td>{{ item.timeFin }}</td>
@@ -135,7 +135,7 @@
 
       </div>
 
-      <button style="background-color: rgb(158, 158, 158); width : 100px; height : 30px" @click="downloadCSV(this.eventList, this.zoneList)"> Export as csv</button>
+      <!-- <button style="background-color: rgb(158, 158, 158); width : 100px; height : 30px" @click="downloadCSV(this.eventList, this.zoneList)"> Export as csv</button> -->
 
 
 
@@ -152,7 +152,7 @@ import { onMounted, onBeforeUnmount } from 'vue';
 
 export default {
   mounted() {
-    
+
     onMounted(() => {
       if (this.visible) {
         document.addEventListener('keydown', this.handleKeyDown);
@@ -161,9 +161,9 @@ export default {
     onBeforeUnmount(() => {
       document.removeEventListener('keydown', this.handleKeyDown);
     });
-   
-    
- 
+
+
+
     this.audioPlayer = this.$refs.audioPlayer;
     this.audioPlayer.addEventListener('timeupdate', () => {
       this.currentTime = this.audioPlayer.currentTime;
@@ -175,17 +175,19 @@ export default {
     //   this.songPath = JSON.parse(localStorage.getItem('songList'))
     // }
 
-    
+
   },
-  props : {
+  props: {
     // songZoneName :  {require :  true, type : Object},
     // colorScene : {require :  true, type :   Object},
     // SceneKey : {require :  true, type : Object},
     // ZoneKey :  {require :  true, type : Object},
-
-    visible : {required : true, type : Boolean},
-    usableZoneList : {require :  true, type : [Object]},
-    usablePlanList : {require :  true, type : [Object]}
+    songPathProp: { require: true, type: [Object] },
+    planList: { require: true, type: [Object] },
+    listeZone: { require: true, type: [Object] },
+    visible: { required: true, type: Boolean },
+    usableZoneList: { require: true, type: [Object] },
+    usablePlanList: { require: true, type: [Object] }
   },
   data() {
     return {
@@ -194,14 +196,14 @@ export default {
       speed: 100,
       songPath: [],
       songPlaying: "",
-      
+
       totalTime: 0,
-      eventList: [],
-      zoneList: [],
+      eventList: this.planList,
+      zoneList: this.listeZone
     };
   },
   watch: {
-    
+
     visible(value) {
       if (value) {
         document.addEventListener('keydown', this.handleKeyDown);
@@ -213,12 +215,14 @@ export default {
       this.valueChangedHandler(newValue);
     },
   },
- 
- 
-  computed: {
 
+
+  computed: {
+    songPathComp() {
+      return this.songPathProp
+    },
     currentTimeBarStyle() {
-     
+
       const barHeight = 100; // change as needed
       const leftPosition = (this.currentTime / this.duration) * 100;
       console.log(leftPosition)
@@ -231,12 +235,12 @@ export default {
       return this.songPath
     },
     eventListComp() {
-      return this.eventList
+      return this.planList
     },
     zoneListComp() {
-      return this.zoneList
+      return this.listeZone
     },
-    duration(){
+    duration() {
       return this.totalTime
     },
     timelineZones() {
@@ -264,9 +268,7 @@ export default {
         const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
         const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
         const totalTime = this.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
-        console.log(this.audioPlayer.duration)
-        console.log(startTime)
-        console.log(totalTime)
+
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
@@ -275,7 +277,7 @@ export default {
         return {
           id: index,
           style: {
-            height:'100%',
+            height: '100%',
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
             backgroundColor: zone.color // assuming you have a property called "color" on your element
@@ -285,49 +287,51 @@ export default {
     }
   },
   methods: {
-    zoneNameFromId(id){
+    zoneNameFromId(id) {
       return this.usableZoneList.find(zone => zone.id === id).name
     },
-    colorZoneFromId(id){
+    colorZoneFromId(id) {
       return this.usableZoneList.find(zone => zone.id === id).color
 
     },
-    colorEventFromId(id){
+    colorEventFromId(id) {
       return this.usablePlanList.find(zone => zone.id === id).color
 
     },
-    getTimeFinScene(time){
+    getTimeFinScene(time) {
       var oldTimeDeb = 100000
-      this.eventList.forEach(zone =>{ if(zone.timeDeb > time && zone.timeDeb < oldTimeDeb)
-      {
-        oldTimeDeb = zone.timeDeb
-      }})
+      this.eventList.forEach(zone => {
+        if (zone.timeDeb > time && zone.timeDeb < oldTimeDeb) {
+          oldTimeDeb = zone.timeDeb
+        }
+      })
 
-      if(oldTimeDeb !== 100000){
+      if (oldTimeDeb !== 100000) {
         return oldTimeDeb
       } else {
         return null
       }
     },
-    getTimeFinZone(time){
+    getTimeFinZone(time) {
       var oldTimeDeb = 100000
-      this.zoneList.forEach(zone =>{ if(zone.timeDeb > time && zone.timeDeb < oldTimeDeb)
-      {
-        oldTimeDeb = zone.timeDeb
-      }})
-      if(oldTimeDeb !== 100000){
+      this.zoneList.forEach(zone => {
+        if (zone.timeDeb > time && zone.timeDeb < oldTimeDeb) {
+          oldTimeDeb = zone.timeDeb
+        }
+      })
+      if (oldTimeDeb !== 100000) {
         return oldTimeDeb
       } else {
         return null
       }
     },
 
-    setZoneName(item,event){
+    setZoneName(item, event) {
       //TODO connect event
-      console.log(item,event)
-      var find = this.zoneList.find(elem => elem.timeDeb === item.timeDeb )
-      find.id=event
-      this.$emit('setZoneName',this.zoneList)
+      console.log(item, event)
+      var find = this.zoneList.find(elem => elem.timeDeb === item.timeDeb)
+      find.id = event
+      this.$emit('setZoneName', this.zoneList)
     },
 
 
@@ -351,7 +355,7 @@ export default {
       zone.sort((a, b) => a.timeDeb - b.timeDeb)
 
       var total = event.concat(zone)
-      total =  total.sort((a, b) => a.timeDeb - b.timeDeb)
+      total = total.sort((a, b) => a.timeDeb - b.timeDeb)
       console.log(total)
 
       const rows = total.map(obj => {
@@ -373,84 +377,87 @@ export default {
       // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
       var toRemove = this.eventList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.eventList.splice(toRemove, 1)
-      this.$emit('removeEvent',this.eventList)
+      this.updatePlanList()
+      this.updateZoneList()
+      this.$emit('planUpdated', this.eventList)
     },
     removeZone(item) {
-      //TODO Effet Bord
-      // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
       var toRemove = this.zoneList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.zoneList.splice(toRemove, 1)
-      this.$emit('removeZone',this.zoneList)
+      this.updatePlanList()
+      this.updateZoneList()
+      this.$emit('zoneUpdated', this.zoneList)
+      this.$emit('planUpdated', this.eventList)
     },
-    getZoneFromTime(time){
-      var zone = this.zoneList.find(zone => zone.timeDeb<time && zone.timeFin>time)
-      if(zone){
+    getZoneFromTime(time) {
+      var zone = this.zoneList.find(zone => zone.timeDeb < time && zone.timeFin > time)
+      if (zone) {
         return zone.id
       }
       return null
     },
-    getNumeroDansZone(zone,time){
+    getNumeroDansZone(zone, time) {
       const filteredItems = this.eventList.filter(item => item.zone === zone);
-  filteredItems.sort((a, b) => a.timeDeb - b.timeDeb);
+      filteredItems.sort((a, b) => a.timeDeb - b.timeDeb);
 
-  if (filteredItems.length === 0) {
-    return 1;
-  }
+      if (filteredItems.length === 0) {
+        return 1;
+      }
 
-  for (let i = filteredItems.length - 1; i >= 0; i--) {
-    if (filteredItems[i].timeDeb <= time) {
-      return filteredItems[i].numeroDsZone+1;
-    }
-  }
+      for (let i = filteredItems.length - 1; i >= 0; i--) {
+        if (filteredItems[i].timeDeb <= time) {
+          return filteredItems[i].numeroDsZone + 1;
+        }
+      }
 
-  // If no item satisfies the condition, return the last item in the array
-  return filteredItems[filteredItems.length - 1].numeroDsZone+1;
+      // If no item satisfies the condition, return the last item in the array
+      return filteredItems[filteredItems.length - 1].numeroDsZone + 1;
 
 
     },
-    updatePlanList(){
+    updatePlanList() {
       //MultipleCheck sur les appartenances aux zones, fin, deb, id, id plan etc.
       this.eventList.sort((a, b) => a.timeDeb - b.timeDeb);
 
-      for (let i = 0; i < this.eventList.length-1; i++) {
-          const currentEvent = this.eventList[i];
-          const nextEvent = this.eventList[i+1]
-          
-          if (nextEvent) {
-            currentEvent.timeFin = nextEvent.timeDeb;
-          } else {
-            // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
-            currentEvent.timeFin = null;
-          }
-   }
+      for (let i = 0; i < this.eventList.length - 1; i++) {
+        const currentEvent = this.eventList[i];
+        const nextEvent = this.eventList[i + 1]
 
-   const filtered = this.eventList.filter(evt => evt.zone === null)
-   console.log("evt list null"+filtered)
-   filtered.forEach(
-    (item, index) =>
-      item.numeroDsZone = index+1
+        if (nextEvent) {
+          currentEvent.timeFin = nextEvent.timeDeb;
+        } else {
+          // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
+          currentEvent.timeFin = null;
+        }
+      }
 
-   )
-  this.zoneList.forEach(zone =>
-  {
-    const filteredItems = this.eventList.filter(item => item.timeDeb> zone.timeDeb && item.timeDeb < zone.timeFin);
-    filteredItems.sort((a,b) => a.timeDeb-b.timeDeb)
-          filteredItems.forEach((item, index) => {
-          item.numeroDsZone = index+1;
-          item.zoneId = zone.numero
-    });
-  })
+      const filtered = this.eventList.filter(evt => evt.zone === null)
+      console.log("evt list null" + filtered)
+      filtered.forEach(
+        (item, index) =>
+          item.numeroDsZone = index + 1
 
-  this.$emit('planUpdated',this.eventList)
+      )
+      this.zoneList.forEach(zone => {
+        const filteredItems = this.eventList.filter(item => item.timeDeb > zone.timeDeb && item.timeDeb < zone.timeFin);
+        filteredItems.sort((a, b) => a.timeDeb - b.timeDeb)
+        filteredItems.forEach((item, index) => {
+          item.numeroDsZone = index + 1;
+          item.zone = zone.numero
+        });
+      })
+
+      this.$emit('planUpdated', this.eventList)
+      console.log("plan updated")
     },
-    updateZoneList(){
+    updateZoneList() {
 
-      this.zoneList.sort((a,b) => a.timeDeb -b.timeDeb)
-      this.zoneList.forEach((item, index) =>
-    {
-            item.numero = index+1;
+      this.zoneList.sort((a, b) => a.timeDeb - b.timeDeb)
+      this.zoneList.forEach((item, index) => {
+        item.numero = index + 1;
       });
 
+      this.$emit('zoneUpdated', this.zoneList)
 
     },
     handleKeyDown(event) {
@@ -461,37 +468,100 @@ export default {
       this.usablePlanList.forEach(
         plan => {
           console.log(plan.key)
-          if(parseInt(plan.key) === parseInt(event.keyCode)){
-         
+          if (parseInt(plan.key) === parseInt(event.keyCode)) {
+
             this.endPlusProche(this.getTime())
             var zone = this.getZoneFromTime(this.getTime())
-            this.eventList.push(new Flag(plan.id,zone,this.getNumeroDansZone(zone,this.getTime()), this.getTime() ,this.getTimeFinScene(this.getTime())))
+            this.eventList.push(new Flag(plan.id, zone, this.getNumeroDansZone(zone, this.getTime()), this.getTime(), this.getTimeFinScene(this.getTime())))
             //Update Plan list todo : doit check que pas effet bord lors cgt
             this.updatePlanList()
           }
         }
       )
 
-      this.usableZoneList.forEach(zone =>
-      {
-        if(parseInt(zone.key) === parseInt(event.keyCode)){
-        this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(zone.id, 0,this.getTime(),    this.getTimeFinZone(this.getTime())))
-        this.updatePlanList()
-        this.updateZoneList()
+      this.usableZoneList.forEach(zone => {
+        if (parseInt(zone.key) === parseInt(event.keyCode)) {
+          this.endPlusProcheZone(this.getTime())
+          this.zoneList.push(new PartiesSong(zone.id, 0, this.getTime(), this.getTimeFinZone(this.getTime())))
+          this.updatePlanList()
+          this.updateZoneList()
 
-    }})
+        }
+      })
 
     },
 
 
 
-      // localStorage.setItem('songList', JSON.stringify(this.songPath))
-  
+    // localStorage.setItem('songList', JSON.stringify(this.songPath))
+
     getTime() {
       // const audioElement = this.$refs.audioPlayer;
       const currentTime = this.audioPlayer.currentTime;
       return currentTime
+    },
+
+    valueChangedHandler(speedval) {
+      this.setSpeed(speedval / 100)
+    },
+    //attention aux nuls
+    endPlusProche(time) {
+      this.eventList.sort((a, b) => a.timeDeb - b.timeDeb)
+      var eventPlusProche = new Flag(9, -1, 'red', "caca")
+      this.eventList.forEach(
+        event => {
+          console.log(event.timeFin)
+          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null')
+            || (String(event.timeFin) === 'null' && String(event.timeDeb) < time)
+            || (String(event.timeFin) > time && String(event.timeDeb) < time)) {
+            eventPlusProche = event
+          }
+        }
+      )
+      if (eventPlusProche.timeDeb !== -1) {
+        eventPlusProche.timeFin = time
+      }
+
+    },
+    endPlusProcheZone(time) {
+      this.zoneList.sort((a, b) => a.timeDeb - b.timeDeb)
+      var eventPlusProche = new PartiesSong(9, -1, 'red')
+      this.zoneList.forEach(
+        event => {
+          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null')
+            || (String(event.timeFin) === 'null' && String(event.timeDeb) < time)
+            || (String(event.timeFin) > time && String(event.timeDeb) < time)) {
+            eventPlusProche = event
+          }
+        }
+      )
+
+      if (eventPlusProche.timeFin !== -1) {
+        console.log(typeof eventPlusProche); // output: "number"
+        eventPlusProche.timeFin = time
+      }
+
+    },
+    /*
+    When a new file is loaded
+    */
+    onFileChange(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      this.songPath.push({ name: file.name, path: file.path })
+      this.songPlaying = file.name
+      // Get a reference to the audio player
+      // localStorage.setItem('songList', JSON.stringify(this.songPath))
+      this.eventList = []
+      this.zoneList = []
+      reader.onload = (event) => {
+        this.audioPlayer.src = event.target.result;
+
+      };
+
+      reader.readAsDataURL(file);
+      this.totalTime = this.audioPlayer.duration
+      this.$emit('fileLoad', this.songPath)
     },
     launchFile(file) {
 
@@ -508,72 +578,10 @@ export default {
       };
       this.audioPlayer.addEventListener('loadedmetadata', () => {
         this.totalTime = this.audioPlayer.duration
-});
-      this.eventList = file.eventList
-      this.zoneList = file.zoneList
+      });
+     
 
       // reader.readAsDataURL(file.path);
-    },
-    valueChangedHandler(speedval) {
-      this.setSpeed(speedval / 100)
-    },
-    //attention aux nuls
-    endPlusProche(time) {
-      this.eventList.sort((a, b) => a.timeDeb - b.timeDeb)
-      var eventPlusProche = new Flag(9, -1, 'red',"caca")
-      this.eventList.forEach(
-        event => {
-          console.log(event.timeFin)
-          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') 
-          || (String(event.timeFin) === 'null' && String(event.timeDeb) <time )
-          ||  (String(event.timeFin) > time && String(event.timeDeb) < time )) {
-            eventPlusProche = event
-          }
-        }
-      )
-      if (eventPlusProche.timeDeb !== -1) {
-        eventPlusProche.timeFin  = time
-      }
-
-    },
-    endPlusProcheZone(time) {
-      this.zoneList.sort((a, b) => a.timeDeb - b.timeDeb)
-      var eventPlusProche = new PartiesSong(9, -1, 'red')
-      this.zoneList.forEach(
-        event => {
-          if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null') 
-          || (String(event.timeFin) === 'null' && String(event.timeDeb) <time )
-          ||  (String(event.timeFin) > time && String(event.timeDeb) < time )) {
-            eventPlusProche = event
-          }
-        }
-      )
-     
-      if (eventPlusProche.timeFin !== -1) {
-        console.log(typeof eventPlusProche); // output: "number"
-        eventPlusProche.timeFin = time
-      }
-
-    },
-    /*
-    When a new file is loaded
-    */
-    onFileChange(event) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      this.songPath.push({name : file.name , path : file.path})
-      this.songPlaying = file.name
-      // Get a reference to the audio player
-      // localStorage.setItem('songList', JSON.stringify(this.songPath))
-      this.eventList = []
-      this.zoneList = []
-      reader.onload = (event) => {
-        this.audioPlayer.src = event.target.result;
-
-      };
-
-      reader.readAsDataURL(file);
-      this.totalTime = this.audioPlayer.duration
     },
 
     play() {
@@ -608,12 +616,13 @@ export default {
   ;
 </script>
 <style>
-.removebtn{
-  width:20px;
-  height:20px;
-  background-image: url('/src/assets/croix.png'); 
+.removebtn {
+  width: 20px;
+  height: 20px;
+  background-image: url('/src/assets/croix.png');
   background-size: cover;
 }
+
 .container2 {
   display: flex;
   flex-direction: row;
@@ -646,12 +655,15 @@ export default {
   margin: auto;
   border-radius: 5%;
 }
+
 .current-time-bar {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 2px; /* change as needed */
-  background-color: rgb(0, 0, 0); /* change as needed */
+  width: 2px;
+  /* change as needed */
+  background-color: rgb(0, 0, 0);
+  /* change as needed */
   z-index: 99;
 }
 
@@ -750,11 +762,12 @@ input[type="file"] {
   margin: 0;
   padding: 0;
 }
-.button{
-  margin:20px;
+
+.button {
+  margin: 20px;
   background-color: lightgreen;
   box-shadow: none;
-  border:#00ab97;
+  border: #00ab97;
   border-radius: 5px;
   min-width: 80px;
   min-height: 30px;
@@ -923,5 +936,4 @@ audio::-webkit-media-controls-toggle-closed-captions-button */
 .ol-days>li:nth-child(6n + 6) {
   --clr_bg: #fc6868;
   --clr_accent: #2e2b3c;
-}
-</style>
+}</style>
