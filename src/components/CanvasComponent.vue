@@ -8,16 +8,16 @@
                     <v-stage style="border : 5px solid black" ref="stage" :config="stageSize"
                         @mousedown="handleStageMouseDown" @touchstart="handleStageMouseDown">
                         <v-layer ref="layer">
-                            <v-rect v-for="item in squares" :key="item.id" :config="item"
+                            <v-rect v-for="item in squares" @dragmove="handleDragMove(item.type,item.name)" :key="item.name" :config="item"
                                 @transformend="handleTransformEnd" />
-                            <v-text v-for="item in text" :key="item.id" :config="item" @transformend="handleTransformEnd" />
-                            <v-arrow v-for="item in arrows" :key="item.id" :config="item"
+                            <v-text v-for="item in text" :key="item.id" @dragmove="handleDragMove(item.type,item.name)" :config="item" @transformend="handleTransformEnd" />
+                            <v-arrow v-for="item in arrows" @dragmove="handleDragMove(item.type,item.name)" :key="item.id" :config="item"
                                 @transformend="handleTransformEnd" />
 
-                            <v-line v-for="item in lines" :key="item.id" :config="item" @transformend="handleTransformEnd">
+                            <v-line v-for="item in lines" @dragmove="handleDragMove(item.type,item.name)" :key="item.id" :config="item" @transformend="handleTransformEnd">
 
                             </v-line>
-                            <v-ellipse v-for="item in ellipses" :key="item.id" :config="item"
+                            <v-ellipse v-for="item in ellipses" @dragmove="handleDragMove(item.type,item.name)" :key="item.id" :config="item"
                                 @transformend="handleTransformEnd">
 
                             </v-ellipse>
@@ -74,7 +74,7 @@ const height = ref(null)
 
 export default {
     props: {
-        planimage : { required: true, type: Object }
+        planImage : { required: true, type: Object }
     },
     setup() {
         const outterDiv = ref(null);
@@ -93,6 +93,9 @@ export default {
             width,
             height
         };
+    },
+    watch : {
+
     },
     computed: {
         selectedBackground() {
@@ -121,63 +124,31 @@ export default {
             stageSize: {
                 width: width,
                 height: height,
+                backgroundColor : this.planImage.backgroundColor
             },
-            ellipses: [],
-            squares: [
-                {
-                    type: "square",
-
-                    rotation: 0,
-                    x: 10,
-                    y: 10,
-                    width: 100,
-                    height: 100,
-                    scaleX: 1,
-                    scaleY: 1,
-                    fill: 'red',
-                    name: 'rect1',
-                    draggable: true,
-                }
-            ],
-            arrows: [
-                {
-                    points: [50, 200, 250, 200],
-                    stroke: '#000000',
-                    tension: 1,
-                    pointerLength: 10,
-                    pointerWidth: 12,
-                    hitStrokeWidth: 10,
-                    type: "arrow",
-                    name: "arrow" + "1",
-                    draggable: true,
-
-                }
-            ],
-            lines: [
-                {
-                    type: "line",
-                    points: [250, 50, 250, 200],
-                    name: 'line1',
-                    stroke: 'black',
-                    draggable: true,
-                    hitStrokeWidth: 10
-                },
-                {
-
-                }
-            ],
-            text: [
-            ],
+            ellipses: this.planImage.ellipses,
+            squares: this.planImage.squares,
+            arrows: this.planImage.arrows,
+            lines:this.planImage.lines,
+            text: this.planImage.text,
             selectedShapeName: '',
         };
     },
     methods: {
         saveImage() {
+            console.log("caca",this.planImage)
 
             let stage = this.$refs.stage.getNode()
             let dataURL = stage.toDataURL()
             // console.log(dataURL)
-            console.log(this.planimage)
+            // console.log(this.planimage)
+            this.$emit('updateImage',{
+                ellipses : this.ellipses,
+                squares : this.squares,
+                arrows : this.arrows,
+                lines : this.lines,
+                text : this.text
+            })
         },
         updateBoundingColorSelected(event) {
             var form = this.allforms.find(truc => truc.name === this.selectedShapeName)
@@ -315,12 +286,35 @@ export default {
                     x: 100,
                     y: 50,
                     points: [73, 70, 500, 20],
-                    name: 'line' + String(Math.floor(Math.random() * 1000)),
+                    name: 'line' + String(Math.floor(Math.random() * 1000000)),
                     stroke: 'black',
                     draggable: true,
                     hitStrokeWidth: 10
                 }
             )
+        },
+        handleDragMove(evt){
+            switch (rect.type) {
+                    case "square":
+                        var find = this.squares.find(sq => sq.name === rect.name)
+                        find = rect
+                        break;
+                    case "ellipse":
+                        var find = this.ellipses.find(sq => sq.name === rect.name)
+                        find = rect
+                        break;
+                    case "line":
+                    var find = this.lines.find(sq => sq.name === rect.name)
+                        find = rect
+                        break;
+                    case "text":
+                    var find = this.text.find(sq => sq.name === rect.name)
+                        find = rect
+                        break;
+                    case "arrow":
+                    var find = this.arrow.find(sq => sq.name === rect.name)
+                        find = rect
+                        break;}
         },
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node
@@ -328,6 +322,7 @@ export default {
             const rect = this.allforms.find(
                 (r) => r.name === this.selectedShapeName
             );
+            console.log(rect)
             // update the state
             rect.x = e.target.x();
             rect.y = e.target.y();
@@ -335,6 +330,7 @@ export default {
             rect.scaleX = e.target.scaleX();
             rect.scaleY = e.target.scaleY();
 
+          
             // change fill
             // rect.fill = Konva.Util.getRandomColor();
         },
