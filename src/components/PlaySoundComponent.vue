@@ -178,10 +178,10 @@ export default {
     
   },
   props : {
-    songZoneName :  {require :  true, type : Object},
-    colorScene : {require :  true, type :   Object},
-    SceneKey : {require :  true, type : Object},
-    ZoneKey :  {require :  true, type : Object},
+    // songZoneName :  {require :  true, type : Object},
+    // colorScene : {require :  true, type :   Object},
+    // SceneKey : {require :  true, type : Object},
+    // ZoneKey :  {require :  true, type : Object},
 
     visible : {required : true, type : Boolean},
     usableZoneList : {require :  true, type : [Object]},
@@ -216,12 +216,7 @@ export default {
  
  
   computed: {
-    zoneNameComp(){
-      if(this.songZoneName!== null){
-                  return this.formatAsArray(this.songZoneName)
-              }
 
-    },
     currentTimeBarStyle() {
      
       const barHeight = 100; // change as needed
@@ -334,19 +329,7 @@ export default {
       find.id=event
       this.$emit('setZoneName',this.zoneList)
     },
-    // TODO Delete
-    formatAsArray(obj){
-            var keys = Object.keys(obj);
-            
-            var formattedArray = []
-            keys.forEach(
-                attribute => {
-                    formattedArray.push({ "id" : attribute , "value" : obj[attribute] })
-                }
 
-            )
-            return formattedArray
-        },
 
     downloadCSV(event, zone) {
       const csv = this.convertToCSV(event, zone);
@@ -429,29 +412,36 @@ export default {
       //MultipleCheck sur les appartenances aux zones, fin, deb, id, id plan etc.
       this.eventList.sort((a, b) => a.timeDeb - b.timeDeb);
 
-      for (let i = 0; i < this.eventList.length; i++) {
-    const currentEvent = this.eventList[i];
-    const nextEvent = this.eventList.find(event => event.timeDeb > currentEvent.timeFin);
-    
-    if (nextEvent) {
-      currentEvent.timeFin = nextEvent.timeDeb;
-    } else {
-      // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
-      currentEvent.timeFin = null;
-    }
+      for (let i = 0; i < this.eventList.length-1; i++) {
+          const currentEvent = this.eventList[i];
+          const nextEvent = this.eventList[i+1]
+          
+          if (nextEvent) {
+            currentEvent.timeFin = nextEvent.timeDeb;
+          } else {
+            // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
+            currentEvent.timeFin = null;
+          }
+   }
 
-    this.zoneList.forEach(zone =>
-    {
-      const filteredItems = this.eventList.filter(item => item.timeDeb> zone.timeDeb && item.timeDeb < zone.timeFin);
-      filteredItems.sort((a,b) => a.timeDeb-b.timeDeb)
-            filteredItems.forEach((item, index) => {
-            item.numeroDsZone = index+1;
-            item.zoneId = zone.numero
-      });
-    })
+   const filtered = this.eventList.filter(evt => evt.zone === null)
+   console.log("evt list null"+filtered)
+   filtered.forEach(
+    (item, index) =>
+      item.numeroDsZone = index+1
 
-    this.$emit('planUpdated',this.eventList)
-  }
+   )
+  this.zoneList.forEach(zone =>
+  {
+    const filteredItems = this.eventList.filter(item => item.timeDeb> zone.timeDeb && item.timeDeb < zone.timeFin);
+    filteredItems.sort((a,b) => a.timeDeb-b.timeDeb)
+          filteredItems.forEach((item, index) => {
+          item.numeroDsZone = index+1;
+          item.zoneId = zone.numero
+    });
+  })
+
+  this.$emit('planUpdated',this.eventList)
     },
     updateZoneList(){
 
@@ -460,16 +450,7 @@ export default {
     {
             item.numero = index+1;
       });
-    //   for (let i = 0; i < this.zoneList.length; i++) {
-    // const currentEvent = this.zoneList[i];
-    // const nextEvent = this.zoneList.find(event => event.timeDeb > currentEvent.timeFin);
-    
-    // if (nextEvent) {
-    //   currentEvent.timeFin = nextEvent.timeDeb;
-    // } else {
-    //   // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
-    //   currentEvent.timeFin = null;
-    // }}
+
 
     },
     handleKeyDown(event) {
