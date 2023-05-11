@@ -71,6 +71,7 @@
           <table id="tab">
             <tr>
               <th>zone</th>
+              <th>numero Zone</th>
               <th>Debut</th>
               <th>Fin</th>
               <th>Couleur</th>
@@ -82,17 +83,18 @@
               <td>
                 <!-- todo in here -->
                   <select  @change="setZoneName(item,$event.target.value)"> 
-                    <option value="{{item.partie}}" selected> {{ item.partie }}</option>
+                    <option value="{{zoneNameFromId(item.id)}}" selected> {{ zoneNameFromId(item.id) }}</option>
 
-                    <option v-for="zoneName in zoneNameComp" :value="zoneName.value">{{ zoneName.value }}</option>
+                    <option v-for="zoneName in usableZoneList" :value="zoneName.id">{{ zoneName.name }}</option>
                   
                   </select>
 
               </td>
+              <td>{{ item.numero }}</td>
               <td>{{ item.timeDeb }}</td>
               <td>{{ item.timeFin }}</td>
               <td>
-                <div class="color-display" :style='{ backgroundColor: item.color }'></div>
+                <div class="color-display" :style='{ backgroundColor: colorZoneFromId(item.id) }'></div>
               </td>
               <td>
                 <button @click="removeZone(item)" class="removebtn" ></button>
@@ -105,7 +107,9 @@
 
           <table id="tab">
             <tr>
-              <th>Scene</th>
+              <th>Scene Id</th>
+              <th>Zone belonged</th>
+              <th>Numero dans zone</th>
               <th>Debut</th>
               <th>Fin</th>
               <th>Couleur</th>
@@ -114,11 +118,13 @@
 
             <tr v-for="item in this.eventListComp" :key="item">
 
-              <td>{{ item.scene }}</td>
+              <td>{{ item.id }}</td>
+              <td>{{ item.zoneId }}</td>
+              <td>{{ item.numeroDsZone }}</td>
               <td>{{ item.timeDeb }}</td>
               <td>{{ item.timeFin }}</td>
               <td>
-                <div class="color-display" :style="{ backgroundColor: item.color }"></div>
+                <div class="color-display" :style="{ backgroundColor: colorEventFromId(item.id) }"></div>
               </td>
               <td>
                 <button class="removebtn" @click="removeEvent(item)"></button>
@@ -141,32 +147,45 @@
 <script>
 import Flag from '@/class/Flag';
 import PartiesSong from '@/class/PartiesSong'
-import Song from '@/class/Song'
+// import Song from '@/class/Song'
+import { onMounted, onBeforeUnmount } from 'vue';
 
 export default {
   mounted() {
     
+    onMounted(() => {
+      if (this.visible) {
+        document.addEventListener('keydown', this.handleKeyDown);
+      }
+    });
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', this.handleKeyDown);
+    });
    
     
  
     this.audioPlayer = this.$refs.audioPlayer;
     this.audioPlayer.addEventListener('timeupdate', () => {
       this.currentTime = this.audioPlayer.currentTime;
-      this.duration = this.audioPlayer.duration;
+      this.totalTime = this.audioPlayer.duration;
     });
-    console.log(localStorage.getItem('songList'))
-    if (localStorage.getItem('songList') !== null) {
+    // console.log(localStorage.getItem('songList'))
+    // if (localStorage.getItem('songList') !== null) {
 
-      this.songPath = JSON.parse(localStorage.getItem('songList'))
-    }
-    this.$emit('colorZone', this.colorZone)
+    //   this.songPath = JSON.parse(localStorage.getItem('songList'))
+    // }
+
+    
   },
   props : {
-    colorZone : {require :  true, type : Object},
     songZoneName :  {require :  true, type : Object},
     colorScene : {require :  true, type :   Object},
     SceneKey : {require :  true, type : Object},
-    ZoneKey :  {require :  true, type : Object}
+    ZoneKey :  {require :  true, type : Object},
+
+    visible : {required : true, type : Boolean},
+    usableZoneList : {require :  true, type : [Object]},
+    usablePlanList : {require :  true, type : [Object]}
   },
   data() {
     return {
@@ -182,14 +201,20 @@ export default {
     };
   },
   watch: {
+    
+    visible(value) {
+      if (value) {
+        document.addEventListener('keydown', this.handleKeyDown);
+      } else {
+        document.removeEventListener('keydown', this.handleKeyDown);
+      }
+    },
     speed(newValue) {
       this.valueChangedHandler(newValue);
     },
   },
-  created() {
-    // Add a global event listener to detect keyboard strokes
-    document.addEventListener('keydown', this.handleKeyDown);
-  },
+ 
+ 
   computed: {
     zoneNameComp(){
       if(this.songZoneName!== null){
@@ -217,8 +242,6 @@ export default {
       return this.zoneList
     },
     duration(){
-      
-
       return this.totalTime
     },
     timelineZones() {
@@ -229,12 +252,14 @@ export default {
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
+        var zone = this.usableZoneList.find(elem => elem.id === element.id)
+
         return {
           id: index,
           style: {
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
-            backgroundColor: element.color // assuming you have a property called "color" on your element
+            backgroundColor: zone.color // assuming you have a property called "color" on your element
           }
         };
       });
@@ -250,25 +275,39 @@ export default {
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
+        var zone = this.usablePlanList.find(elem => elem.id === element.id)
+
         return {
           id: index,
           style: {
             height:'100%',
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
-            backgroundColor: element.color // assuming you have a property called "color" on your element
+            backgroundColor: zone.color // assuming you have a property called "color" on your element
           }
         };
       });
     }
   },
   methods: {
+    zoneNameFromId(id){
+      return this.usableZoneList.find(zone => zone.id === id).name
+    },
+    colorZoneFromId(id){
+      return this.usableZoneList.find(zone => zone.id === id).color
+
+    },
+    colorEventFromId(id){
+      return this.usablePlanList.find(zone => zone.id === id).color
+
+    },
     getTimeFinScene(time){
       var oldTimeDeb = 100000
       this.eventList.forEach(zone =>{ if(zone.timeDeb > time && zone.timeDeb < oldTimeDeb)
       {
         oldTimeDeb = zone.timeDeb
       }})
+
       if(oldTimeDeb !== 100000){
         return oldTimeDeb
       } else {
@@ -287,14 +326,15 @@ export default {
         return null
       }
     },
+
     setZoneName(item,event){
+      //TODO connect event
       console.log(item,event)
       var find = this.zoneList.find(elem => elem.timeDeb === item.timeDeb )
-      find.partie=event
-      var array = this.formatAsArray(this.songZoneName)
-      var arrayObj = array.find(tuple => tuple.value === event)
-      find.color = this.colorZone[arrayObj.id]
+      find.id=event
+      this.$emit('setZoneName',this.zoneList)
     },
+    // TODO Delete
     formatAsArray(obj){
             var keys = Object.keys(obj);
             
@@ -307,13 +347,7 @@ export default {
             )
             return formattedArray
         },
-    colorZoneUpdate(event){
-      console.log(event)
-    },
-    setColorZone(obj){
-      console.log("faire set" + obj)
-      this.$emit('colorZone',this.colorZone)
-    },
+
     downloadCSV(event, zone) {
       const csv = this.convertToCSV(event, zone);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -351,108 +385,128 @@ export default {
     },
 
     removeEvent(item) {
+      //TODO Effet Bord
 
       // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
       var toRemove = this.eventList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.eventList.splice(toRemove, 1)
+      this.$emit('removeEvent',this.eventList)
     },
     removeZone(item) {
+      //TODO Effet Bord
       // var found = this.eventList.find(a => a.timeDeb === item.timeDeb)
       var toRemove = this.zoneList.findIndex(found => { return found.timeDeb === item.timeDeb })
       this.zoneList.splice(toRemove, 1)
+      this.$emit('removeZone',this.zoneList)
     },
+    getZoneFromTime(time){
+      var zone = this.zoneList.find(zone => zone.timeDeb<time && zone.timeFin>time)
+      if(zone){
+        return zone.id
+      }
+      return null
+    },
+    getNumeroDansZone(zone,time){
+      const filteredItems = this.eventList.filter(item => item.zone === zone);
+  filteredItems.sort((a, b) => a.timeDeb - b.timeDeb);
+
+  if (filteredItems.length === 0) {
+    return 1;
+  }
+
+  for (let i = filteredItems.length - 1; i >= 0; i--) {
+    if (filteredItems[i].timeDeb <= time) {
+      return filteredItems[i].numeroDsZone+1;
+    }
+  }
+
+  // If no item satisfies the condition, return the last item in the array
+  return filteredItems[filteredItems.length - 1].numeroDsZone+1;
 
 
+    },
+    updatePlanList(){
+      //MultipleCheck sur les appartenances aux zones, fin, deb, id, id plan etc.
+      this.eventList.sort((a, b) => a.timeDeb - b.timeDeb);
+
+      for (let i = 0; i < this.eventList.length; i++) {
+    const currentEvent = this.eventList[i];
+    const nextEvent = this.eventList.find(event => event.timeDeb > currentEvent.timeFin);
+    
+    if (nextEvent) {
+      currentEvent.timeFin = nextEvent.timeDeb;
+    } else {
+      // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
+      currentEvent.timeFin = null;
+    }
+
+    this.zoneList.forEach(zone =>
+    {
+      const filteredItems = this.eventList.filter(item => item.timeDeb> zone.timeDeb && item.timeDeb < zone.timeFin);
+      filteredItems.sort((a,b) => a.timeDeb-b.timeDeb)
+            filteredItems.forEach((item, index) => {
+            item.numeroDsZone = index+1;
+            item.zoneId = zone.numero
+      });
+    })
+
+    this.$emit('planUpdated',this.eventList)
+  }
+    },
+    updateZoneList(){
+
+      this.zoneList.sort((a,b) => a.timeDeb -b.timeDeb)
+      this.zoneList.forEach((item, index) =>
+    {
+            item.numero = index+1;
+      });
+    //   for (let i = 0; i < this.zoneList.length; i++) {
+    // const currentEvent = this.zoneList[i];
+    // const nextEvent = this.zoneList.find(event => event.timeDeb > currentEvent.timeFin);
+    
+    // if (nextEvent) {
+    //   currentEvent.timeFin = nextEvent.timeDeb;
+    // } else {
+    //   // If there is no next event, set the current event's timeFin to the end of the day (86400000 milliseconds)
+    //   currentEvent.timeFin = null;
+    // }}
+
+    },
     handleKeyDown(event) {
+      //TODO HUGE
       // Do something with the event, such as logging the key code
       console.log("Eventcode " + event.keyCode)
-      if (String(event.keyCode) === this.SceneKey[1]) {
-        console.log("scene 1 added")
-        this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(1, this.getTime() ,this.getTimeFinScene(this.getTime()),this.colorScene[1]))
 
-      }
-      if (String(event.keyCode) === this.SceneKey[2]) {
-        console.log("scene 2 added")
+      this.usablePlanList.forEach(
+        plan => {
+          console.log(plan.key)
+          if(parseInt(plan.key) === parseInt(event.keyCode)){
+         
+            this.endPlusProche(this.getTime())
+            var zone = this.getZoneFromTime(this.getTime())
+            this.eventList.push(new Flag(plan.id,zone,this.getNumeroDansZone(zone,this.getTime()), this.getTime() ,this.getTimeFinScene(this.getTime())))
+            //Update Plan list todo : doit check que pas effet bord lors cgt
+            this.updatePlanList()
+          }
+        }
+      )
 
-        this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(2, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[2]))
-
-      }
-      if (String(event.keyCode) === this.SceneKey[3]) {
-        console.log("scene 3 added")
-        this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(3, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[3]))
-      }
-      if (String(event.keyCode) === this.SceneKey[4]) {
-        console.log("scene 3 added")
-        this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(4, this.getTime(), this.getTimeFinScene(this.getTime()),this.colorScene[4]))
-      }
-      if (String(event.keyCode) === this.SceneKey[5]) {
-        console.log("scene 3 added")
-        this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(5, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[5]))
-      }
-      if (String(event.keyCode) === this.SceneKey[6]) {
-        console.log("scene 3 added")
-        this.endPlusProche(this.getTime())
-        this.eventList.push(new Flag(6, this.getTime(),this.getTimeFinScene(this.getTime()), this.colorScene[6]))
-      }
-
-
-      if (String(event.keyCode) === this.ZoneKey[1]) {
+      this.usableZoneList.forEach(zone =>
+      {
+        if(parseInt(zone.key) === parseInt(event.keyCode)){
         this.endPlusProcheZone(this.getTime())
-        this.getTimeFinZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[1], this.getTime(),        this.getTimeFinZone(this.getTime())
-,        this.colorZone[1]))
+        this.zoneList.push(new PartiesSong(zone.id, 0,this.getTime(),    this.getTimeFinZone(this.getTime())))
+        this.updatePlanList()
+        this.updateZoneList()
 
-        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-        console.log(this.zoneList)
-      }
-      if (String(event.keyCode) === this.ZoneKey[2]) {
-        this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[2], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[2]))
-        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-        console.log(this.zoneList)
-      }
-      if (String(event.keyCode) === this.ZoneKey[3]) {
-        this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[3], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[3]))
-        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-        console.log(this.zoneList)
-      }
-      if (String(event.keyCode) === this.ZoneKey[4]) {
-        this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[4], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[4]))
-        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-        console.log(this.zoneList)
-      }
-      if (String(event.keyCode) === this.ZoneKey[5]) {
-        this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[5], this.getTime(),   this.getTimeFinZone(this.getTime()), this.colorZone[5]))
-        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-      }
-      if (String(event.keyCode) === this.ZoneKey[6]) {
-        this.endPlusProcheZone(this.getTime())
-        this.zoneList.push(new PartiesSong(this.songZoneName[6], this.getTime(),    this.getTimeFinZone(this.getTime()),this.colorZone[6]))
-        //TODO if added entre 2, il faut set direct la fin ici dans une fonciton pour assurer de pas avoir de nulls dans le bail
-      }
+    }})
 
-      this.saveElements()
     },
-    saveElements() {
-      //Find the song we are working on
-      var found = this.songPath.find(song => this.songPlaying === song.name)
-      if (found) {
-  console.log(typeof found);
-  found.eventList = (this.eventList);
-  found.zoneList = (this.zoneList);
-}
 
 
-      localStorage.setItem('songList', JSON.stringify(this.songPath))
-    },
+
+      // localStorage.setItem('songList', JSON.stringify(this.songPath))
+  
     getTime() {
       // const audioElement = this.$refs.audioPlayer;
       const currentTime = this.audioPlayer.currentTime;
@@ -526,10 +580,10 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       const reader = new FileReader();
-      this.songPath.push(new Song(file.name, file.path, [], []))
+      this.songPath.push({name : file.name , path : file.path})
       this.songPlaying = file.name
       // Get a reference to the audio player
-      localStorage.setItem('songList', JSON.stringify(this.songPath))
+      // localStorage.setItem('songList', JSON.stringify(this.songPath))
       this.eventList = []
       this.zoneList = []
       reader.onload = (event) => {

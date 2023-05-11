@@ -1,13 +1,13 @@
 export default class Flag {
-    constructor(scene,timeDeb,timeFin,color,zone) {
-      this.scene = scene;
-      this.id = null
+    constructor(id,zoneId,numeroDsZone,timeDeb,timeFin) {
+      //Say which kind of plan this is
+      this.id = id
+      //which zone do it belongs to
+      this.zone = zoneId;
+      this.numeroDsZone = numeroDsZone
       this.timeDeb = timeDeb
       this.timeFin = timeFin;
-      this.color= color;
-      this.zone = zone;
       this.planImage = {
-        backGround : color,
         ellipses : [],
         squares : [],
         arrows : [],

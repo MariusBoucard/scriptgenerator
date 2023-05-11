@@ -36,8 +36,18 @@
         @addCostume="this.addCostume($event)"></CostumesComponent>
 
 
-      <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" :colorZone=colorZone :songZoneName=songZoneName
-        :colorScene=colorScene :SceneKey=SceneKey :ZoneKey=ZoneKey :class="this.showSettings ? 'reduit' : 'plein'"
+      <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" 
+        :colorZone=colorZone 
+        :songZoneName=songZoneName
+        :colorScene=colorScene 
+        :SceneKey=SceneKey 
+        :ZoneKey=ZoneKey 
+
+        :visible="this.showComponentObject['PlaySound']"
+
+        :usablePlanList=scriptData.usablePlanList
+        :usableZoneList="scriptData.usableZoneList"
+        :class="this.showSettings ? 'reduit' : 'plein'"
         @settingsDisplay="this.showSettings = !this.showSettings"></PlaySoundComponent>
 
 
@@ -242,10 +252,14 @@ export default {
           planList: []
         },
         usableZoneList: [
-          { id: 0, name: 'intro', key: 65, color: "#33ff33" }
+          { id: 0, name: 'intro', key: 49, color: "#33ff33" },
+          { id: 1, name: 'verse', key: 50, color: "#33ff99" }
+
         ],
         usablePlanList: [
-          { id: 0, name: "dans les champs", description: 'c\'est la description du plan', key: 49, color: "#33ff33" }
+          { id: 0, name: "dans les champs", description: 'c\'est la description du plan', key: 65, color: "#33ff33" },
+          { id: 1, name: "dans les champs", description: 'c\'est la description du plan', key: 90, color: "#33ff33" }
+
         ]
       },
       test: "prout",

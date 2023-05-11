@@ -1,10 +1,8 @@
 export default class SongPart {
-    constructor(partie,timeDeb,timeEnd,color) {
+    constructor(id,timeDeb,timeEnd,numero) {
     // Number of the song part for the order
-      this.numero = 0;
-    //   Multiple already defined songZones sooooo
-      this.partId = 0;
-      this.name = "intro"
+      this.id = id
+      this.numero = numero;
       this.timeDeb = timeDeb
       this.timeFin = timeEnd;
     }}
