@@ -9,11 +9,22 @@
         <li><a @click="updateShow('PlaySound')">Timeline</a></li>
         <li><a @click="updateShow('ZoneAndPlanSettings')">Settings </a></li>
         <li><a @click="updateShow('Scenes')">Scenes </a></li>
+        <li><a @click="updateShow('Magasin')">Magasin </a></li>
 
       </ul>
     </nav>
 
     <div>
+   
+      <MagasinComponent
+        v-show="this.showComponentObject['Magasin']"
+        :typeOutil=scriptData.typeOutil
+        :magasinList=scriptData.magasinOutils
+
+        @magasinUpdated="updateMagasin($event)"
+        @updateOutilType="updateOutilsType($event)"
+      ></MagasinComponent>
+      
       <ScenesComponent v-show="this.showComponentObject['Scenes']"
             :usableZoneList=scriptData.usableZoneList
             :usablePlanList=scriptData.usablePlanList
@@ -95,8 +106,8 @@ import SettingsComponent from './components/SettingsComponent.vue';
 import SynopsisComponent from './components/SynopsisComponent.vue';
 import Character from './class/Character';
 import ZoneAndPlanSettingsComponent from './components/ZoneAndPlanSettingsComponent.vue';
-import PartiesSong from './class/PartiesSong';
 import ScenesComponent from './components/ScenesComponent.vue';
+import MagasinComponent from './components/MagasinComponent.vue';
 
 export default {
   name: 'App',
@@ -109,7 +120,8 @@ export default {
     CostumesComponent,
     CanvasComponent,
     ZoneAndPlanSettingsComponent,
-    ScenesComponent
+    ScenesComponent,
+    MagasinComponent
 },
   computed: {
 
@@ -122,6 +134,16 @@ export default {
       if(localStorage.getItem('saveApp')){
         this.scriptData =JSON.parse(localStorage.getItem('saveApp'))
       }
+    },
+    updateMagasin(evt){
+      this.scriptData.magasinOutils = evt
+      this.save()
+
+    },
+    updateOutilsType(evt){
+      this.scriptData.typeOutil = evt
+      this.save()
+
     },
     updateScene(evt){
       var scene = this.scriptData.timeline.planList.find(plan => plan.zone === evt.zone && plan.nbDsZone === evt.nbDsZone)
@@ -303,7 +325,8 @@ export default {
       var ind = this.scriptData.characterList.indexOf(found)
       this.scriptData.characterList.splice(ind, 1)
       // this.storageUpdate()
-    }
+    },
+    
   },
   data() {
     return {
@@ -322,12 +345,14 @@ export default {
           planList: []
         },
         usableZoneList: [
-      
-
         ],
         usablePlanList: [
+        ],
+        typeOutil:[
+          
+        ],
+        magasinOutils : [
          
-
         ]
       },
       test: "prout",
@@ -339,13 +364,14 @@ export default {
         "PlaySound": false,
         "Settings": false,
         "ZoneAndPlanSettings" : false,
-        "Scenes" : false
+        "Scenes" : false,
+        "Magasin" : false 
       },
       showSettings: false,
     }
   },
   mounted(){
-    this.load()
+      this.load()
   }
 }
 </script>
