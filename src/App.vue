@@ -277,6 +277,8 @@ export default {
 
       var find = this.scriptData.actorList.find(act => act.name === name)
       find.removeRole(character)
+      this.save()
+
       // this.storageUpdate()
     },
     addActor(evt) {
@@ -290,6 +292,8 @@ export default {
         var actor = this.scriptData.actorList.find(actor => actor.name === evt.currentActor)
         actor.moreInfo = evt.currentInfo
       }
+      this.save()
+
       // this.storageUpdate()
     },
     actorExist(name) {
@@ -304,11 +308,15 @@ export default {
       var found = this.scriptData.actorList.find(ac => ac.name === name)
       var ind = this.scriptData.actorList.indexOf(found)
       this.scriptData.actorList.splice(ind, 1)
+      this.save()
+
     },
     removeAccessoireCharacter(character, costume) {
       console.log(character)
       var find = this.scriptData.characterList.find(act => act.name === character)
       find.removeAccessoire(costume)
+      this.save()
+
       // this.storageUpdate()
     },
     addCostume(evt) {
@@ -323,6 +331,8 @@ export default {
         var actor = this.scriptData.characterList.find(actor => actor.name === evt.currentCharacter)
         actor.moreInfo = evt.currentInfo
       }
+      this.save()
+
       // this.storageUpdate()
     },
     characterExists(name) {
@@ -337,6 +347,8 @@ export default {
       var found = this.scriptData.characterList.find(ac => ac.name === name)
       var ind = this.scriptData.characterList.indexOf(found)
       this.scriptData.characterList.splice(ind, 1)
+      this.save()
+
       // this.storageUpdate()
     },
     exportMd() {
