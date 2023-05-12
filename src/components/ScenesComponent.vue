@@ -2,12 +2,17 @@
     <div>
         
         <h1>Define each plan</h1>
-        <button @click="this.previousZone()">gauvhe</button> <p>{{ selectedId }}</p><button @click="this.nextZone()">Droite</button>
+        <div style="display: inline;padding-bottom:20px">
+
+            <button @click="this.previousZone()" style="display: inline;">Previous scene</button> 
+            <p style="display: inline;margin: 150px;">{{ selectedId }}</p>
+            <button style="display: inline;" @click="this.nextZone()">Next scene</button>
+        </div>
         
         <table class="mytable" id="tab">
             <tr>
               <th class="myth" style="width: 3%;">Scene N°</th>
-              <th class="myth" style="width: 3%;">Numero dans scene</th>
+              <th class="myth" style="width: 3%;"># Scene</th>
               <th class="myth" style="width: 40%;">Vue</th>
               <th class="myth">Description</th>
               <th class="myth">Paroles</th>
@@ -16,7 +21,7 @@
               <th class="myth">Couleur</th>
             </tr>
 
-            <tr v-for="scene in sceneSelectedList" :key="item">
+            <tr v-for="scene in sceneSelectedList" :key="item"  >
 
               <td >{{ scene.id }}  <p>{{  getUsableSceneData(scene.id).name}}</p></td>
               <td >{{ scene.numeroDsZone }}</td>
@@ -32,13 +37,27 @@
                 <textarea class="custom-textarea" style="display:flex"  v-model=scene.paroles placeholder="more info you might add" @input="updateParoles(scene.zone,scene.numeroDsZone,$event.target.value)"></textarea>
 
               </td>
-              <td>
-                <li v-for="characters in scene.characters">{{ characters.name }} | <button @click="removeCharacter(scene.zone,scene.numeroDsZone,characters)"></button></li>
-                <select  v-model="selectedCharacter">
-                    <option v-for="character in this.unusedCharacter(scene.zone,scene.numeroDsZone)" :value="character">{{ character.name }}</option>
-                    <!-- Select to add a character : need props on characters -->
-                </select>
-                <button @click="addCharacter(scene.zone,scene.numeroDsZone)">AddChar</button>
+              <td style="display: block;margin-top:">
+                <div style="height:100%">
+
+                    <div style="height: 33.33%; margin: auto;">
+  <ul style="list-style-type: none; padding: 0; margin: 0;">
+    <li v-for="character in scene.characters" style="display: flex; align-items: center; padding: 5px;">
+      <div style="flex: 1;">{{ character.name }}</div>
+      <button style="background-color: #f32727; border: none; color: white; padding: 5px; border-radius: 5%;" @click="removeCharacter(scene.zone,scene.numeroDsZone,character)">X</button>
+    </li>
+  </ul>
+</div>
+      <div style="height: 33.33%;"> <select  v-model="selectedCharacter" style="display: block;margin:auto;margin-top: 20px; min-width: 100px;">
+                        <option v-for="character in this.unusedCharacter(scene.zone,scene.numeroDsZone)" :value="character">{{ character.name }}</option>
+                        <!-- Select to add a character : need props on characters -->
+                    </select></div>
+      <div style="height: 33.33%;margin:auto;margin-top: 20px;">
+                    <button @click="addCharacter(scene.zone,scene.numeroDsZone)" style="display: block;margin:auto">AddChar</button></div>
+                </div>
+
+               
+               
               </td>
             <td>{{ getUsableSceneData(scene.id).description }}</td>
             <td> <div :style="{backgroundColor : getUsableSceneData(scene.id).color }" style="width:60px; height:40px"></div></td>
@@ -162,6 +181,8 @@ export default{
   .mytable {
     border-collapse: collapse;
     table-layout: fixed;
+    position: relative;
+    margin-top: 20px;
     width:100%
  
   }

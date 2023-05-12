@@ -1,5 +1,5 @@
 <template>
-    <div style="height:100%;width:100%;background-color: blue;">
+    <div style="height:100%;width:100%">
 
         <div class="containerCanvas">
             <div class="column-left">
@@ -33,12 +33,13 @@
                 <input type="color" :value=selectedBorder @input="updateBoundingColorSelected($event.target.value)">
                 <p></p>
                 <input v-model=textToAdd type="text" />
-                <button @click="addText()">
+                <button @click="addText()" style="margin-top:20px">
                     add Text
                 </button>
                 <p></p>
-                <button @click="saveImage()">save</button>
                 <button @click="supprElem()"> Suppr elem</button>
+                <p></p>
+                <button @click="saveImage()">save</button>
 
             </div>
         </div>
@@ -48,10 +49,10 @@
 
         <div style="margin:20px">
 
-            <button @click="addCircle()">
+            <button style="display: inline-block; margin-right: 10px;" @click="addCircle()">
                 add Circle
             </button>
-            <button @click="addLine()">
+            <button style="display: inline-block; margin-right: 10px;" @click="addLine()">
                 add Line
             </button>
             <button @click="addSquare()">
