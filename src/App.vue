@@ -10,32 +10,31 @@
         <li><a @click="updateShow('ZoneAndPlanSettings')">Settings </a></li>
         <li><a @click="updateShow('Scenes')">Scenes </a></li>
         <li><a @click="updateShow('Magasin')">Magasin </a></li>
+        <li style="float:right" @click="exportMd()"><a>Export as Md file</a></li>
+        <li style="float:right" @click="saveAsAFile()"><a>Save</a></li>
+        <li style="float:right" @click="loadFile()">
+          <div class="button-wrap">
+            <label class="buttonbis" for="F"> ouvrir fichier </label>
+            <input id="F" type="file" @change="loadFile($event)" style="visibility:hidden ; width:0px">
+          </div>
+        </li>
 
       </ul>
     </nav>
 
     <div>
-      <button @click="exportMd()">saveeeee</button>
-   
-      <MagasinComponent
-        v-show="this.showComponentObject['Magasin']"
-        :typeOutil=scriptData.typeOutil
-        :magasinList=scriptData.magasinOutils
 
-        @magasinUpdated="updateMagasin($event)"
-        @updateOutilType="updateOutilsType($event)"
-      ></MagasinComponent>
-      
-      <ScenesComponent v-show="this.showComponentObject['Scenes']"
-            :usableZoneList=scriptData.usableZoneList
-            :usablePlanList=scriptData.usablePlanList
-            :zoneList=scriptData.timeline.zoneList
-            :planList=scriptData.timeline.planList
-            :usableCharacterList=scriptData.characterList
-            @sceneUpdated="updateScene($event)"
-            ></ScenesComponent>
+      <MagasinComponent v-show="this.showComponentObject['Magasin']" :typeOutil=scriptData.typeOutil
+        :magasinList=scriptData.magasinOutils @magasinUpdated="updateMagasin($event)"
+        @updateOutilType="updateOutilsType($event)"></MagasinComponent>
+
+      <ScenesComponent v-show="this.showComponentObject['Scenes']" :usableZoneList=scriptData.usableZoneList
+        :usablePlanList=scriptData.usablePlanList :zoneList=scriptData.timeline.zoneList
+        :planList=scriptData.timeline.planList :usableCharacterList=scriptData.characterList
+        @sceneUpdated="updateScene($event)"></ScenesComponent>
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
-      <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']" :zoneList=scriptData.usableZoneList :planList=scriptData.usablePlanList
+      <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']"
+        :zoneList=scriptData.usableZoneList :planList=scriptData.usablePlanList
         @zoneUpdate="this.scriptData.usableZoneList = $event" @planUpdate="this.scriptData.usablePlanList = $event"
         @deletePlan="this.deleteUsablePlan($event)" @deleteZone="this.deleteUsableZone($event)"
         @changePlanColor="this.changePlanColor($event)" @changeZoneColor="this.changeZoneColor($event)"
@@ -58,32 +57,17 @@
         @addCostume="this.addCostume($event)"></CostumesComponent>
 
 
-      <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" 
-        
-        :songPathProp="this.scriptData.timeline.songPath"
-
-        :visible="this.showComponentObject['PlaySound']"
-
-        :usablePlanList=scriptData.usablePlanList
-        :usableZoneList="scriptData.usableZoneList"
-        :class="this.showSettings ? 'reduit' : 'plein'"
-        :planList=scriptData.timeline.planList
-        :listeZone=scriptData.timeline.zoneList
-
-        @settingsDisplay="this.showSettings = !this.showSettings"
-        @planUpdated="updatePlan($event)"
-        @zoneUpdated="updateZone($event)"
-        @fileLoad="fileLoad($event)"
-        
-        ></PlaySoundComponent>
+      <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" :songPathProp="this.scriptData.timeline.songPath"
+        :visible="this.showComponentObject['PlaySound']" :usablePlanList=scriptData.usablePlanList
+        :usableZoneList="scriptData.usableZoneList" :class="this.showSettings ? 'reduit' : 'plein'"
+        :planList=scriptData.timeline.planList :listeZone=scriptData.timeline.zoneList
+        @settingsDisplay="this.showSettings = !this.showSettings" @planUpdated="updatePlan($event)"
+        @zoneUpdated="updateZone($event)" @fileLoad="fileLoad($event)"></PlaySoundComponent>
 
 
 
-      <SettingsComponent v-show="this.showSettings" 
-        :colorZone="this.colorZone" 
-        :colorScene="this.colorScene"
-        :usableZoneList="this.scriptData.usableZoneList"
-        :usablePlanList="this.scriptData.usablePlanList"
+      <SettingsComponent v-show="this.showSettings" :colorZone="this.colorZone" :colorScene="this.colorScene"
+        :usableZoneList="this.scriptData.usableZoneList" :usablePlanList="this.scriptData.usablePlanList"
         :songZoneName="this.songZoneName" :SceneKey=SceneKey :ZoneKey=ZoneKey @colorSceneUpdate="updateColorScene($event)"
         @colorZoneUpdate="updateColorZone($event)" @zoneNameUpdate="updateZoneName($event)"
         :class="this.showSettings ? 'settings' : ''"></SettingsComponent>
@@ -124,51 +108,78 @@ export default {
     ZoneAndPlanSettingsComponent,
     ScenesComponent,
     MagasinComponent
-},
+  },
   computed: {
 
   },
   methods: {
-    save(){
-      localStorage.setItem('saveApp',JSON.stringify(this.scriptData))
+    loadFile(event) {
+
+      if (event !== undefined) {
+        const reader = new FileReader();
+        const file = event.target.files[0];
+        reader.onload = (event) => {
+          this.scriptData = JSON.parse(event.target.result, this.reviver);
+          // Do something with the jsonData object here
+          console.log("chargé")
+          console.log(event.target.result);
+          console.log(this.scriptData)
+          // this.$forceUpdate()
+        };
+        reader.readAsText(file);
+      }
+
+
     },
-    load(){
-      if(localStorage.getItem('saveApp')){
-        this.scriptData =JSON.parse(localStorage.getItem('saveApp'))
+    saveAsAFile() {
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.scriptData)));
+      element.setAttribute('download', `${this.scriptData.title}.ntm`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    },
+    save() {
+      localStorage.setItem('saveApp', JSON.stringify(this.scriptData))
+    },
+    load() {
+      if (localStorage.getItem('saveApp')) {
+        this.scriptData = JSON.parse(localStorage.getItem('saveApp'), this.reviver)
       }
     },
-    updateMagasin(evt){
+    updateMagasin(evt) {
       this.scriptData.magasinOutils = evt
       this.save()
 
     },
-    updateOutilsType(evt){
+    updateOutilsType(evt) {
       this.scriptData.typeOutil = evt
       this.save()
 
     },
-    updateScene(evt){
+    updateScene(evt) {
       var scene = this.scriptData.timeline.planList.find(plan => plan.zone === evt.zone && plan.nbDsZone === evt.nbDsZone)
       scene = evt
-      console.log("update Scene",this.scriptData.timeline.planList)
+      console.log("update Scene", this.scriptData.timeline.planList)
       this.save()
     },
-    updatePlan(evt){
+    updatePlan(evt) {
       this.scriptData.timeline.planList = evt
-      console.log("updatePlan",this.scriptData.timeline.planList)
+      console.log("updatePlan", this.scriptData.timeline.planList)
       this.save()
 
 
     },
-    fileLoad(evt){
-      console.log("fileLoad",evt)
-      this.scriptData.timeline.songPath=evt
+    fileLoad(evt) {
+      console.log("fileLoad", evt)
+      this.scriptData.timeline.songPath = evt
       this.save()
 
     },
-    updateZone(evt){
+    updateZone(evt) {
       this.scriptData.timeline.zoneList = evt
-      console.log("updateZone",this.scriptData.timeline.zoneList)
+      console.log("updateZone", this.scriptData.timeline.zoneList)
       this.save()
 
 
@@ -328,7 +339,7 @@ export default {
       this.scriptData.characterList.splice(ind, 1)
       // this.storageUpdate()
     },
-    exportMd(){
+    exportMd() {
       const markdownString = objectToMarkdown(this.scriptData);
 
       const element = document.createElement('a');
@@ -339,6 +350,19 @@ export default {
       element.click();
       document.body.removeChild(element);
 
+    },
+    reviver(key, value) {
+      if (key === "characterList") {
+        // If the key is "characterList", iterate over each character object
+        // and create a new Character instance for each one
+        return value.map((character) => new Character(character.name, character.accessoire, character.moreInfo));
+      } else if (key === "actorList") {
+        // If the key is "actorList", iterate over each actor object
+        // and create a new Actor instance for each one
+        return value.map((actor) => new Actor(actor.name, actor.role, actor.moreInfo));
+      } else {
+        return value;
+      }
     }
   },
   data() {
@@ -347,10 +371,10 @@ export default {
         title: "someTitle",
         synopsis: "",
         actorList: [
-         
+
         ],
         characterList: [
-         
+
         ],
         timeline: {
           songPath: [],
@@ -361,11 +385,11 @@ export default {
         ],
         usablePlanList: [
         ],
-        typeOutil:[
-          
+        typeOutil: [
+
         ],
-        magasinOutils : [
-         
+        magasinOutils: [
+
         ]
       },
       test: "prout",
@@ -376,15 +400,15 @@ export default {
         "Costumes": false,
         "PlaySound": false,
         "Settings": false,
-        "ZoneAndPlanSettings" : false,
-        "Scenes" : false,
-        "Magasin" : false 
+        "ZoneAndPlanSettings": false,
+        "Scenes": false,
+        "Magasin": false
       },
       showSettings: false,
     }
   },
-  mounted(){
-      this.load()
+  mounted() {
+     this.load()
   }
 }
 </script>

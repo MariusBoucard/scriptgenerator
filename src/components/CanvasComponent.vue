@@ -13,7 +13,7 @@
                             <v-rect :config="backGround"></v-rect>
                             <v-rect v-for="item in squares" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.name" :config="item"
                                 @transformend="handleTransformEnd" />
-                            <v-text v-for="item in text" :key="item.id" @dragmove="handleDragMove(item.type,item.name,$evt)" :config="item" @transformend="handleTransformEnd" />
+                            <v-text v-for="item in text" :key="item.id" @dragmove="handleDragMove(item.type,item.name,$event)" :config="item" @transformend="handleTransformEnd" />
                             <v-arrow v-for="item in arrows" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.id" :config="item"
                                 @transformend="handleTransformEnd" />
 
@@ -100,7 +100,23 @@ export default {
         };
     },
     watch : {
-
+        backgroundColor : {
+            handler(newvalue,oldValue){
+               this.backGround = {
+                        type: "square",
+                        rotation: 0,
+                        x: 0,
+                        y: 0,
+                        width: width,
+                        height: height,
+                        scaleX: 1,
+                        scaleY: 1,
+                        fill: newvalue,
+                        name: "square" + String(Math.floor(Math.random() * 1000)),
+                        draggable: false,
+                    }
+            }
+        }
     },
     computed: {
         selectedBackground() {
@@ -335,6 +351,7 @@ export default {
              
                 return
             }
+           
             switch (type) {
                     case "square":
                         rect = this.squares.find(sq => sq.name === name)
@@ -342,9 +359,8 @@ export default {
                     case "ellipse":
                         rect = this.ellipses.find(sq => sq.name === name)
                         break;
-                    
                     case "text":
-                    rect = this.text.find(sq => sq.name === name)
+                        rect = this.text.find(sq => sq.name === name)
                         break;
                     case "arrow":
                     rect = this.arrow.find(sq => sq.name === name)

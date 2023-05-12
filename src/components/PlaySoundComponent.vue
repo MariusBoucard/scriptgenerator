@@ -214,6 +214,26 @@ export default {
     speed(newValue) {
       this.valueChangedHandler(newValue);
     },
+    planList : {
+       
+      handler(newValue, oldValue) {
+        // Do something with the new and old values
+        this.eventList = newValue
+      },
+      /* Specify other options if needed */
+      deep: true,
+      immediate: true
+    },
+    listeZone : {
+       
+       handler(newValue, oldValue) {
+         // Do something with the new and old values
+         this.zoneList = newValue
+       },
+       /* Specify other options if needed */
+       deep: true,
+       immediate: true
+     }
   },
 
 

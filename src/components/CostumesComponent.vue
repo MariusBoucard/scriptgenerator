@@ -21,8 +21,8 @@
     <div class="form-container">
         <h3>Add a costume to character</h3>
         <div class="form-group">
-            <input type="text" v-model="this.currentCharacter" placeholder="Actor name"/>
-            <input type="text" v-model="this.currentCostume"  placeholder="Character he will play"/>
+            <input type="text" v-model="this.currentCharacter" placeholder="Character name"/>
+            <input type="text" v-model="this.currentCostume"  placeholder="Accessoire to add"/>
             <button @click="this.$emit('addCostume', { currentCharacter : this.currentCharacter, currentCostume : this.currentCostume, currentInfo : this.currentInfo})">
                 Add it to list
             </button>

@@ -6,7 +6,7 @@ export function objectToMarkdown(obj) {
     markdown += getCharacters(obj)
     markdown += getZones(obj)
     markdown += getPlans(obj)
-    markdown += getImages(obj)
+    // markdown += getImages(obj)
     markdown += getImagesTab(obj)
     markdown += getOutils(obj)
 

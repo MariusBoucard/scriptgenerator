@@ -13,7 +13,7 @@
                         {{ outil.name }} | {{ outil.quantity }}
                         
     
-                        <button @click="removeOutil(outil.type,outil.name)">Remove outil</button>
+                        <button @click="removeOutil(outil)">Remove outil</button>
                   
                  
 
@@ -61,7 +61,22 @@ export default {
         typeOutil : { required: true, type: [String] },
         magasinList : { required : true, type : [Object]}
     },
-
+    watch : {
+        typeOutil : {
+            handler(newValue,oldValue){
+                this.typeOutilInside = newValue
+            },
+            deep : true,
+            immediate : true
+        },
+        magasinList : {
+            handler(newValue,oldValue){
+                this.magasinListInside = newValue
+            },
+            deep : true,
+            immediate : true
+        }
+    },
     data() {
         return {
             magasinListInside : this.magasinList,

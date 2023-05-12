@@ -81,6 +81,20 @@ export default{
         planList: { required: true, type: [Object] },
         usableCharacterList : {required : true, type : [Object]}
     },
+    watch: {
+        /* Watch an individual property */
+        planList: {
+            handler(newValue, oldValue) {
+            // Do something with the new and old values
+            this.planListIntra = newValue
+            // this.planListIntra = newValue
+            },
+            /* Specify other options if needed */
+            deep: true,
+            immediate: true
+        },
+        
+  },
     data() {
         return {
             index: 0,
