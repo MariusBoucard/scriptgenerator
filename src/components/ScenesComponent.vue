@@ -28,6 +28,7 @@
               <td class="mytd">
                     <CanvasComponent
                     :planImage="scene.planImage"
+                    :backgroundColor="getBackground(scene.id)"
                     @updateImage=updateImage(scene.zone,scene.numeroDsZone,$event)></CanvasComponent>
               </td>
               <td class="mytd">
@@ -118,6 +119,9 @@ export default{
         }
     },
     methods: {
+        getBackground(id){
+            return this.usablePlanList.find(plan => plan.id === id).color
+        },
         unusedCharacter(zone,nbDsZone){
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
             return this.usableCharacterListComp.filter(item => !scene.characters.includes(item));
@@ -126,7 +130,8 @@ export default{
             console.log(this.planListComp)
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
             console.log(zone,nbDsZone)
-            scene.planImage = evt
+            scene.planImage = evt.planImage
+            scene.planData = evt.data
             this.$emit('sceneUpdated',scene)
         },
         updateDescription(zone,nbDsZone,evt){

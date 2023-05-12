@@ -15,6 +15,7 @@
     </nav>
 
     <div>
+      <button @click="exportMd()">saveeeee</button>
    
       <MagasinComponent
         v-show="this.showComponentObject['Magasin']"
@@ -108,6 +109,7 @@ import Character from './class/Character';
 import ZoneAndPlanSettingsComponent from './components/ZoneAndPlanSettingsComponent.vue';
 import ScenesComponent from './components/ScenesComponent.vue';
 import MagasinComponent from './components/MagasinComponent.vue';
+import { objectToMarkdown } from './utils/converterMd'
 
 export default {
   name: 'App',
@@ -326,13 +328,24 @@ export default {
       this.scriptData.characterList.splice(ind, 1)
       // this.storageUpdate()
     },
-    
+    exportMd(){
+      const markdownString = objectToMarkdown(this.scriptData);
+
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(markdownString));
+      element.setAttribute('download', 'myMarkdownFile.md');
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+
+    }
   },
   data() {
     return {
       scriptData: {
         title: "someTitle",
-        synopsis: "Synop",
+        synopsis: "",
         actorList: [
          
         ],

@@ -244,7 +244,7 @@ export default {
       return this.totalTime
     },
     timelineZones() {
-      return this.zoneList.map((element, index) => {
+      return this.zoneListComp.map((element, index) => {
         const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
         const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
         const totalTime = this.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
@@ -263,8 +263,9 @@ export default {
         };
       });
     },
+  
     timelineEvent() {
-      return this.eventList.map((element, index) => {
+      return this.eventListComp.map((element, index) => {
         const startTime = element.timeDeb; // assuming you have a property called "startTime" on your element
         const endTime = element.timeFin; // assuming you have a property called "endTime" on your element
         const totalTime = this.duration; // assuming you have a property called "totalTime" that represents the total duration of the timeline
@@ -574,11 +575,18 @@ export default {
       reader.onload = (event) => {
         // this.audioPlayer = this.$refs.audioPlayer;
         this.audioPlayer.src = event.target.result;
-
+        this.totalTime = this.audioPlayer.duration
+        
+        
+        
       };
       this.audioPlayer.addEventListener('loadedmetadata', () => {
         this.totalTime = this.audioPlayer.duration
       });
+      this.audioPlayer.addEventListener('canplaythrough', () => {
+    this.totalTime = this.audioPlayer.duration;
+  });
+      console.log("pute",this.duration)
      
 
       // reader.readAsDataURL(file.path);

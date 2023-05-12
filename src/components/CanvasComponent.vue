@@ -3,11 +3,14 @@
 
         <div class="containerCanvas">
             <div class="column-left">
-                <div ref="outterDiv" style="width : 100%;height:100%;background-color: grey;">
+                <div ref="outterDiv" style="width : 100%;height:100%;">
 
-                    <v-stage style="border : 5px solid black" ref="stage" :config="stageSize"
+                    <v-stage style="border : 5px solid black" ref="stage" 
+                    
+                    :config="stageSize"
                         @mousedown="handleStageMouseDown" @touchstart="handleStageMouseDown">
                         <v-layer ref="layer">
+                            <v-rect :config="backGround"></v-rect>
                             <v-rect v-for="item in squares" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.name" :config="item"
                                 @transformend="handleTransformEnd" />
                             <v-text v-for="item in text" :key="item.id" @dragmove="handleDragMove(item.type,item.name,$evt)" :config="item" @transformend="handleTransformEnd" />
@@ -75,7 +78,8 @@ const height = ref(null)
 
 export default {
     props: {
-        planImage : { required: true, type: Object }
+        planImage : { required: true, type: Object },
+        backgroundColor : {type : String}
     },
     setup() {
         const outterDiv = ref(null);
@@ -116,6 +120,7 @@ export default {
             return '#000000'
         },
         allforms() {
+            console.log(this.stageSize.background)
             return this.squares.concat(this.lines).concat(this.ellipses).concat(this.text).concat(this.arrows)
         }
     },
@@ -125,7 +130,6 @@ export default {
             stageSize: {
                 width: width,
                 height: height,
-                backgroundColor : this.planImage.backgroundColor
             },
             ellipses: this.planImage.ellipses,
             squares: this.planImage.squares,
@@ -133,6 +137,21 @@ export default {
             lines:this.planImage.lines,
             text: this.planImage.text,
             selectedShapeName: '',
+            backGround : 
+                {
+                        type: "square",
+                        rotation: 0,
+                        x: 0,
+                        y: 0,
+                        width: width,
+                        height: height,
+                        scaleX: 1,
+                        scaleY: 1,
+                        fill: this.backgroundColor,
+                        name: "square" + String(Math.floor(Math.random() * 1000)),
+                        draggable: false,
+                    }
+            
         };
     },
     methods: {
@@ -144,11 +163,15 @@ export default {
             // console.log(dataURL)
             // console.log(this.planimage)
             this.$emit('updateImage',{
-                ellipses : this.ellipses,
-                squares : this.squares,
-                arrows : this.arrows,
-                lines : this.lines,
-                text : this.text
+                planImage : {
+                    ellipses : this.ellipses,
+                    squares : this.squares,
+                    arrows : this.arrows,
+                    lines : this.lines,
+                    text : this.text
+
+                },
+                data : dataURL
             })
         },
         updateBoundingColorSelected(event) {

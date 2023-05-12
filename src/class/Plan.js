@@ -10,7 +10,7 @@ export default class Plan {
         this.sceneId = 0
         this.timeBeginning =0
         this.timeEnd =0
-
+        this.planData = null
         this.planImage = {
             ellipses : [],
             squares : [],
