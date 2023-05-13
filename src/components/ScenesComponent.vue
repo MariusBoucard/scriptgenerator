@@ -30,6 +30,10 @@
               <td >{{ scene.id }}  <p>{{  getUsableSceneData(scene.id).name}}</p></td>
               <td >{{ scene.numeroDsZone }}
                 <button style="margin-top:20px" @click="playSound(scene.timeDeb,scene.timeFin)">Play</button>
+                <div>
+                    <p>Debut : {{ scene.timeDeb }}</p>
+                    <p>Fin : {{ scene.timeFin }}</p>
+                </div>
             </td>
               <td class="mytd">
                     <CanvasComponent
