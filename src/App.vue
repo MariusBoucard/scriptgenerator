@@ -28,9 +28,11 @@
         :magasinList=scriptData.magasinOutils @magasinUpdated="updateMagasin($event)"
         @updateOutilType="updateOutilsType($event)"></MagasinComponent>
 
-      <ScenesComponent v-show="this.showComponentObject['Scenes']" :usableZoneList=scriptData.usableZoneList
+      <ScenesComponent v-show="this.showComponentObject['Scenes']" 
+        :usableZoneList=scriptData.usableZoneList
         :usablePlanList=scriptData.usablePlanList :zoneList=scriptData.timeline.zoneList
         :planList=scriptData.timeline.planList :usableCharacterList=scriptData.characterList
+        :currentSoundLink="currentFile"
         @sceneUpdated="updateScene($event)"></ScenesComponent>
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
       <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']"
@@ -57,12 +59,19 @@
         @addCostume="this.addCostume($event)"></CostumesComponent>
 
 
-      <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" :songPathProp="this.scriptData.timeline.songPath"
-        :visible="this.showComponentObject['PlaySound']" :usablePlanList=scriptData.usablePlanList
-        :usableZoneList="scriptData.usableZoneList" :class="this.showSettings ? 'reduit' : 'plein'"
-        :planList=scriptData.timeline.planList :listeZone=scriptData.timeline.zoneList
-        @settingsDisplay="this.showSettings = !this.showSettings" @planUpdated="updatePlan($event)"
-        @zoneUpdated="updateZone($event)" @fileLoad="fileLoad($event)"></PlaySoundComponent>
+      <PlaySoundComponent v-show="this.showComponentObject['PlaySound']" 
+      :songPathProp="this.scriptData.timeline.songPath"
+        :visible="this.showComponentObject['PlaySound']" 
+        :usablePlanList=scriptData.usablePlanList
+        :usableZoneList="scriptData.usableZoneList" 
+        :class="this.showSettings ? 'reduit' : 'plein'"
+        :planList=scriptData.timeline.planList 
+        :listeZone=scriptData.timeline.zoneList
+        @settingsDisplay="this.showSettings = !this.showSettings"
+         @planUpdated="updatePlan($event)"
+        @zoneUpdated="updateZone($event)" 
+        @fileLoad="fileLoad($event)"
+        @fileChanged="fileChanged($event)"></PlaySoundComponent>
 
 
 
@@ -113,6 +122,10 @@ export default {
 
   },
   methods: {
+    fileChanged(event){
+      this.currentFile = event
+      console.log(this.currentFile)
+    },
     loadFile(event) {
 
       if (event !== undefined) {
@@ -404,7 +417,7 @@ export default {
 
         ]
       },
-      test: "prout",
+      currentFile: "",
       currentTab: "Synopsis",
       showComponentObject: {
         "Synopsis": true,

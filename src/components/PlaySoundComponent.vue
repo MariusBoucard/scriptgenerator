@@ -583,6 +583,8 @@ export default {
       reader.readAsDataURL(file);
       this.totalTime = this.audioPlayer.duration
       this.$emit('fileLoad', this.songPath)
+      this.$emit('fileChanged',"file://"+file.path)
+
     },
     launchFile(file) {
 
@@ -600,6 +602,7 @@ export default {
         
         
       };
+      this.$emit('fileChanged',songURL)
       this.audioPlayer.addEventListener('loadedmetadata', () => {
         this.totalTime = this.audioPlayer.duration
       });

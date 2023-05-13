@@ -8,6 +8,10 @@
             <p style="display: inline;margin: 150px;">{{ selectedId }}</p>
             <button style="display: inline;" @click="this.nextZone()">Next scene</button>
         </div>
+        <audio style=" width: 80%;" ref="audioPlayerScene" controls @timeupdate="onPlaying">
+      Your browser does not support the
+      <code>audio</code> element.
+    </audio>
         
         <table class="mytable" id="tab">
             <tr>
@@ -24,7 +28,9 @@
             <tr v-for="scene in sceneSelectedList" :key="item"  >
 
               <td >{{ scene.id }}  <p>{{  getUsableSceneData(scene.id).name}}</p></td>
-              <td >{{ scene.numeroDsZone }}</td>
+              <td >{{ scene.numeroDsZone }}
+                <button style="margin-top:20px" @click="playSound(scene.timeDeb,scene.timeFin)">Play</button>
+            </td>
               <td class="mytd">
                     <CanvasComponent
                     :planImage="scene.planImage"
@@ -75,6 +81,7 @@ import CanvasComponent from './CanvasComponent.vue'
 
 export default{
     props: {
+        currentSoundLink : {required : true, type : String},
         usableZoneList: { required: true, type: [Object] },
         usablePlanList: { required: true, type: [Object] },
         zoneList: { required: true, type: [Object] },
@@ -82,6 +89,31 @@ export default{
         usableCharacterList : {required : true, type : [Object]}
     },
     watch: {
+        currentSoundLink : {
+            handler(newvalue, oldvalue) {
+                console.log(newvalue)
+                try{
+                    
+                                        const audioPlayer = this.$refs.audioPlayerScene;
+                    
+                          const reader = new FileReader();
+                    
+                          const songURL = newvalue;
+                          audioPlayer.src = songURL;
+                    
+                          reader.onload = (event) => {
+                            // this.audioPlayer = this.$refs.audioPlayer;
+                            audioPlayer.src = event.target.result;
+
+                };
+    
+                } catch(e){
+                    console.log("zbiii")
+                }
+    },
+    immediate: true
+
+        },
         /* Watch an individual property */
         planList: {
             handler(newValue, oldValue) {
@@ -133,6 +165,36 @@ export default{
         }
     },
     methods: {
+        onPlaying() {
+      const audioPlayer = this.$refs.audioPlayerScene;
+      if (!audioPlayer) {
+        return;
+      }
+      this.currentTime = audioPlayer.currentTime;
+      this.seekValue = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+    },
+    onSeek() {
+      const audioPlayer = this.$refs.audioPlayerScene;
+      const seekto = audioPlayer.duration * (this.seekValue / 100);
+      audioPlayer.currentTime = seekto;
+    },
+        playSound(timedeb,timefin){
+            const audioPlayer = this.$refs.audioPlayerScene;
+        audioPlayer.currentTime = timedeb; // start playing from 5 seconds
+        if(audioPlayer.paused){
+            audioPlayer.play();
+
+        } else {
+            audioPlayer.pause()
+        }
+
+        const endTime = timefin; // end playing at 10 seconds
+        audioPlayer.addEventListener('timeupdate', () => {
+      if (audioPlayer.currentTime >= endTime) {
+        audioPlayer.pause();
+      }
+    });
+        },
         getBackground(id){
             return this.usablePlanList.find(plan => plan.id === id).color
         },
