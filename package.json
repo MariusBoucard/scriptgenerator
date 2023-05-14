@@ -2,6 +2,8 @@
   "name": "scriptgenerator",
   "version": "0.1.0",
   "private": true,
+  "description": "This script generator has to objectiveto provide to the user an immersive experience through it's music listening to write the most relevent Music video",
+  "author":"Marius Boucard Bocciarelli",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

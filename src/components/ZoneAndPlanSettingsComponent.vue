@@ -125,10 +125,10 @@ export default{
             console.log("titleUpdated")
         },
         getPlan(id){
-            return this.planListInside.find(plan => plan.id === id)
+            return this.planListInside.find(plan => String(plan.id) === String(id))
         },
         getZone(id){
-            return this.zoneListInside.find(zone => zone.id === id)
+            return this.zoneListInside.find(zone => String(zone.id) === String(id))
 
         },
         changePlanDescription(id,desc){
@@ -175,7 +175,7 @@ export default{
         },
         addPlan(){
             // Check if id already taken :
-            if(!this.planListInside.find(plan => plan.id === this.currentId) && !this.planListInside.find(plan => plan.key === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
+            if(!this.planListInside.find(plan => ParseInt(plan.id) === this.currentId) && !this.planListInside.find(plan => ParseInt(plan.key) === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
                 this.planListInside.push(
                     {
                         id : this.currentId ,
@@ -195,7 +195,7 @@ export default{
 
         },
         addZone(){
-            if(!this.zoneListInside.find(zone => zone.id === this.currentId) && !this.zoneListInside.find(plan => plan.key === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
+            if(!this.zoneListInside.find(zone => ParseInt(zone.id) === this.currentId) && !this.zoneListInside.find(plan => ParseInt(plan.key) === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
                 this.zoneListInside.push(
                     {
                         id : this.currentId ,

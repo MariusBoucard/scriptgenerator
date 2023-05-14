@@ -12,6 +12,12 @@
       Your browser does not support the
       <code>audio</code> element.
     </audio>
+    <div >
+        <!-- <p>This scene is a {{ getUsableSceneData(selectedId).name }} and starts at : {{ formatSeconds(parseInt(selectedZone.timeDeb)) }} / Ends at : {{ formatSeconds(selectedZone.timeFin) }} </p>    -->
+           <!-- <p>This scene starts at : {{ formatSeconds(parseInt(selectedZone.timeDeb)) }} {{ selectedZone.timeDeb}}/ Ends at : {{ formatSeconds(selectedZone.timeFin) }} </p>    -->
+
+    </div> 
+        <!-- <p>{{ selectedZone }}</p> -->
         
         <table class="mytable" id="tab">
             <tr>
@@ -25,14 +31,14 @@
               <th class="myth">Couleur</th>
             </tr>
 
-            <tr v-for="scene in sceneSelectedList" :key="item"  >
+            <tr v-for="scene in sceneSelectedList" :key="scene"  >
 
               <td >{{ scene.id }}  <p>{{  getUsableSceneData(scene.id).name}}</p></td>
               <td >{{ scene.numeroDsZone }}
                 <button style="margin-top:20px" @click="playSound(scene.timeDeb,scene.timeFin)">Play</button>
                 <div>
-                    <p>Debut : {{ scene.timeDeb }}</p>
-                    <p>Fin : {{ scene.timeFin }}</p>
+                    <p>Debut : {{ formatSeconds(scene.timeDeb) }}</p>
+                    <p>Fin : {{ formatSeconds(scene.timeFin) }}</p>
                 </div>
             </td>
               <td class="mytd">
@@ -75,8 +81,9 @@
              
             </tr>
           </table>
-           
-              
+          
+          <!-- mTODOOOO -->
+          <textarea style="width:80%;margin-top:20px" class="custom-textarea" :value="getDescription" @change="updateDescriptionZone($event)" placeholder="informations about the scene"></textarea>
         
     </div>
 </template>
@@ -129,11 +136,22 @@ export default{
             deep: true,
             immediate: true
         },
+        zoneList: {
+            handler(newValue, oldValue) {
+            // Do something with the new and old values
+            this.zoneListIntra = newValue
+            // this.planListIntra = newValue
+            },
+            /* Specify other options if needed */
+            deep: true,
+            immediate: true
+        },
         
   },
     data() {
         return {
             index: 0,
+            zoneListIntra : this.zoneList,
             planListIntra : this.planList,
             selectedCharacter: ''
         };
@@ -164,11 +182,37 @@ export default{
         nbZone() {
             return this.idList.length;
         },
+        selectedZone(){
+            return this.zoneList.filter(zone => zone.numero === this.selectedId);
+
+        },
+       
         sceneSelectedList() {
             return this.planList.filter(scene => scene.zone === this.selectedId);
+        },
+        getDescription(){
+            var a = this.zoneListIntra.filter(zone => zone.numero === this.selectedId)
+            if(a[0]!==undefined){
+                return a[0].description
+
+            }
+            return null
         }
     },
     methods: {
+        updateDescriptionZone(evt){
+            var a = this.selectedZone
+            console.log(a)
+            this.$emit('updateDescriptionZone',{ zonenb : a[0].numero , value : evt.target.value})
+            
+        },
+        formatSeconds(seconds) {
+  const dateObj = new Date(seconds * 1000);
+  const minutes = dateObj.getUTCMinutes();
+  const secondsFormatted = dateObj.getUTCSeconds().toString().padStart(2, '0');
+  const milliseconds = Math.floor(dateObj.getUTCMilliseconds() / 10).toString().padStart(2, '0');
+  return `${minutes}:${secondsFormatted}.${milliseconds}`;
+},
         onPlaying() {
       const audioPlayer = this.$refs.audioPlayerScene;
       if (!audioPlayer) {
@@ -192,9 +236,9 @@ export default{
             audioPlayer.pause()
         }
 
-        const endTime = timefin; // end playing at 10 seconds
+        this.endTime = timefin; // end playing at 10 seconds
         audioPlayer.addEventListener('timeupdate', () => {
-      if (audioPlayer.currentTime >= endTime) {
+      if (audioPlayer.currentTime >= this.endTime) {
         audioPlayer.pause();
       }
     });
@@ -248,14 +292,13 @@ export default{
             this.$emit('sceneUpdated',scene)
         },
         getUsableSceneData(id) {
-            console.log("getUsa", this.usablePlanList.find(a => a.id === id));
             return this.usablePlanList.find(a => a.id === id);
         },
         nextZone() {
             this.index = ((this.index + 1) % this.nbZone);
         },
         previousZone() {
-            this.index === -1 ? this.index = this.nbZone - 1 : this.index = this.index - 1;
+            this.index === 0 ? this.index = this.nbZone - 1 : this.index = this.index - 1;
         }
     },
     components: { CanvasComponent }

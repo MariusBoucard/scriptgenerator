@@ -4,7 +4,7 @@ export default class PartiesSong {
     this.numero = numero;
     this.timeDeb = timeDeb
     this.timeFin = timeEnd;
-   
+   this.description = ""
     
   }
 

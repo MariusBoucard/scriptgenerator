@@ -33,6 +33,7 @@
         :usablePlanList=scriptData.usablePlanList :zoneList=scriptData.timeline.zoneList
         :planList=scriptData.timeline.planList :usableCharacterList=scriptData.characterList
         :currentSoundLink="currentFile"
+        @updateDescriptionZone="updateDescriptionZone($event)"
         @sceneUpdated="updateScene($event)"></ScenesComponent>
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
       <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']"
@@ -41,7 +42,7 @@
         @deletePlan="this.deleteUsablePlan($event)" @deleteZone="this.deleteUsableZone($event)"
         @changePlanColor="this.changePlanColor($event)" @changeZoneColor="this.changeZoneColor($event)"
         @nameZoneChanged="this.nameZoneChanged($event)" @namePlanChanged="this.namePlanChanged($event)"
-:title="scriptData.title"
+        :title="scriptData.title"
         @updateTitle="scriptData.title = $event"
         @descriptionPlanChanged="this.descriptionPlanChanged($event)"></ZoneAndPlanSettingsComponent>
 
@@ -125,6 +126,12 @@ export default {
 
   },
   methods: {
+    updateDescriptionZone(evt){
+      
+        var zo =this.scriptData.timeline.zoneList.find(zone => zone.numero === evt.zonenb)
+        zo.description = evt.value
+        console.log(zo,"zone desc update")
+    },
     updateSynopsis(event) {
       this.scriptData.synopsis = event
       this.save()

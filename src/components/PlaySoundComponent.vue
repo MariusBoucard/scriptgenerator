@@ -91,8 +91,8 @@
 
               </td>
               <td>{{ item.numero }}</td>
-              <td>{{ item.timeDeb }}</td>
-              <td>{{ item.timeFin }}</td>
+              <td>{{ formatSeconds(item.timeDeb) }}</td>
+              <td>{{ formatSeconds(item.timeFin) }}</td>
               <td>
                 <div class="color-display" :style='{ backgroundColor: colorZoneFromId(item.id) }'></div>
               </td>
@@ -121,8 +121,8 @@
               <td>{{ item.id }}</td>
               <td>{{ item.zone }}</td>
               <td>{{ item.numeroDsZone }}</td>
-              <td>{{ item.timeDeb }}</td>
-              <td>{{ item.timeFin }}</td>
+              <td>{{ formatSeconds(item.timeDeb) }}</td>
+              <td>{{ formatSeconds(item.timeFin) }}</td>
               <td>
                 <div class="color-display" :style="{ backgroundColor: colorEventFromId(item.id) }"></div>
               </td>
@@ -310,6 +310,13 @@ export default {
     }
   },
   methods: {
+     formatSeconds(seconds) {
+  const dateObj = new Date(seconds * 1000);
+  const minutes = dateObj.getUTCMinutes();
+  const secondsFormatted = dateObj.getUTCSeconds().toString().padStart(2, '0');
+  const milliseconds = Math.floor(dateObj.getUTCMilliseconds() / 10).toString().padStart(2, '0');
+  return `${minutes}:${secondsFormatted}.${milliseconds}`;
+},
     zoneNameFromId(id) {
       return this.usableZoneList.find(zone => String(zone.id) === String(id)).name
     },
