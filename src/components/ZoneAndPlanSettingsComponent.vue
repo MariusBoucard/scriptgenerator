@@ -103,6 +103,16 @@ export default{
             handler(newvalue,oldvalue){
                 this.titleInside = newvalue
             }
+        },
+        planList : {
+            handler(newValue,oldValue){
+                this.planListInside = newValue
+            }
+        },
+        zoneList : {
+            handler(newValue,oldValue){
+                this.zoneListInside = newValue
+            }
         }
     },
     data(){
@@ -175,7 +185,7 @@ export default{
         },
         addPlan(){
             // Check if id already taken :
-            if(!this.planListInside.find(plan => ParseInt(plan.id) === this.currentId) && !this.planListInside.find(plan => ParseInt(plan.key) === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
+            if(!this.planListInside.find(plan => parseInt(plan.id) === this.currentId) && !this.planListInside.find(plan => parseInt(plan.key) === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
                 this.planListInside.push(
                     {
                         id : this.currentId ,
@@ -195,7 +205,7 @@ export default{
 
         },
         addZone(){
-            if(!this.zoneListInside.find(zone => ParseInt(zone.id) === this.currentId) && !this.zoneListInside.find(plan => ParseInt(plan.key) === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
+            if(!this.zoneListInside.find(zone => parseInt(zone.id) === this.currentId) && !this.zoneListInside.find(plan => parseInt(plan.key) === this.currentKey.charCodeAt(0) && this.currentKey.charCodeAt(0) !== NaN)){
                 this.zoneListInside.push(
                     {
                         id : this.currentId ,

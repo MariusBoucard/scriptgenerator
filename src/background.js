@@ -26,7 +26,7 @@ async function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
     width: 1600,
-    height: 1000,
+    height: 800,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -35,9 +35,11 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       webSecurity: false
 
-    }
+    },
     
-  })
+  }) 
+   //win.setIcon(`${__dirname}/logo.png`)
+
   // const menu = Menu.buildFromTemplate(template)
   // Menu.setApplicationMenu(menu)
   if (process.env.WEBPACK_DEV_SERVER_URL) {

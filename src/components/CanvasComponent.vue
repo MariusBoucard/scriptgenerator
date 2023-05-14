@@ -61,6 +61,9 @@
             <button @click="addSquare()">
                 add Square
             </button>
+            <button @click="addArrow()">
+                add Arrow
+            </button>
 
 
 
@@ -363,7 +366,7 @@ export default {
                         rect = this.text.find(sq => sq.name === name)
                         break;
                     case "arrow":
-                    rect = this.arrow.find(sq => sq.name === name)
+                        rect = this.arrows.find(sq => sq.name === name)
                         break;}
                         console.log(evt)
             rect.x = evt.target.x();

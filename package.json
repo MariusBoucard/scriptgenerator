@@ -13,6 +13,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "rebuild": "electron-rebuild"
   },
+  
   "main": "background.js",
   "dependencies": {
     "babel-runtime": "^6.26.0",
