@@ -1,18 +1,30 @@
 'use strict'
-
+const { Menu } = require('electron')
+const { ipcMain } = require('electron');
 import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+let win;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
+const template = [  {    
+  label: 'Fichier',
+      submenu: [
+        {    label: 'Do Something',
+            click() {          win.webContents.send('handle-click')        }      } 
+         ]
+  }
+]
+
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1600,
     height: 1000,
     webPreferences: {
@@ -24,8 +36,10 @@ async function createWindow() {
       webSecurity: false
 
     }
+    
   })
-
+  // const menu = Menu.buildFromTemplate(template)
+  // Menu.setApplicationMenu(menu)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)

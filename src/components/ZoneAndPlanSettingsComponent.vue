@@ -1,5 +1,8 @@
 <template>
 <div>
+    <h1>Name of the Script</h1>
+<input type="text" style="font-size: larger;" @change="updateTitle()" v-model="titleInside" input>
+
     <h1>List of differents plans of the clip (Havn't found a relevant name for it yet)</h1>
     <div ref="planList">
       
@@ -90,11 +93,21 @@
 <script>
 export default{
     props : {
+        title : {require : true,type : String},
+
         planList : {required : true, type :[Object]},
         zoneList : {required : true, type :[Object]}
     },
+    watch : {
+        title : {
+            handler(newvalue,oldvalue){
+                this.titleInside = newvalue
+            }
+        }
+    },
     data(){
         return {
+            titleInside : this.title,
             planListInside : this.planList,
             zoneListInside : this.zoneList,
             currentKey : "",
@@ -107,6 +120,10 @@ export default{
         }
     },
     methods : {
+        updateTitle(){
+            this.$emit('updateTitle',this.titleInside)
+            console.log("titleUpdated")
+        },
         getPlan(id){
             return this.planListInside.find(plan => plan.id === id)
         },

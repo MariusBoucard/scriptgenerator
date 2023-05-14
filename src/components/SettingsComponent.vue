@@ -3,12 +3,11 @@
 <!-- Display the zone keys -->
 <!-- put descriptif scenes as well -->
 
-
 <h2>Color for differents Plans</h2>
 
     <ul style="list-style: none;">
         <li v-for="color in usablePlanListComp"  > Plan n° {{ color.id }} : 
-<input type="color"   :value=color.color  @input="updateColorScene(color.id,$event.target.value)"> | {{ String.fromCharCode(color.key) }}
+<input type="color"   :value=color.color  @input="updateColorScene(color.id,$event.target.value)"> | {{ String.fromCharCode(color.key) }} | {{ color.description }}
 </li>
     </ul>
 
@@ -44,6 +43,7 @@ export default {
             return this.usableZoneList
         }
     },
+   
     
     
     methods : {

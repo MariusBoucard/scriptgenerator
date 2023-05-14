@@ -271,7 +271,9 @@ export default {
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
-        var zone = this.usableZoneList.find(elem => elem.id === element.id)
+        var zone = this.usableZoneList.find(elem => 
+          String(elem.id) === String(element.id))
+      
 
         return {
           id: index,
@@ -309,14 +311,14 @@ export default {
   },
   methods: {
     zoneNameFromId(id) {
-      return this.usableZoneList.find(zone => zone.id === id).name
+      return this.usableZoneList.find(zone => String(zone.id) === String(id)).name
     },
     colorZoneFromId(id) {
-      return this.usableZoneList.find(zone => zone.id === id).color
+      return this.usableZoneList.find(zone => String(zone.id) === String(id)).color
 
     },
     colorEventFromId(id) {
-      return this.usablePlanList.find(zone => zone.id === id).color
+      return this.usablePlanList.find(zone => String(zone.id) === String(id)).color
 
     },
     getTimeFinScene(time) {

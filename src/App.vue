@@ -2,7 +2,7 @@
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <div style="width:100%;margin: none; padding:none">
     <nav>
-      <ul>
+      <ul style="width:100%">
         <li> <a @click="updateShow('Synopsis')">Synopsis</a></li>
         <li><a @click="updateShow('Actors')">Actors</a></li>
         <li><a @click="updateShow('Costumes')">Costumes</a></li>
@@ -13,10 +13,10 @@
         <li style="float:right" @click="exportMd()"><a>Export as Md file</a></li>
         <li style="float:right" @click="saveAsAFile()"><a>Save</a></li>
         <li style="float:right" @click="loadFile()">
-          <div class="button-wrap">
-            <label class="buttonbis" for="F"> ouvrir fichier </label>
-            <input id="F" type="file" @change="loadFile($event)" style="visibility:hidden ; width:0px">
-          </div>
+          <div style="height: 100%; display: flex; align-items: center;">
+    <label style="color: white;font-size: medium" for="F">ouvrir fichier</label>
+    <input id="F" type="file" @change="loadFile($event)" style="visibility:hidden; width:0px">
+</div>
         </li>
 
       </ul>
@@ -41,12 +41,14 @@
         @deletePlan="this.deleteUsablePlan($event)" @deleteZone="this.deleteUsableZone($event)"
         @changePlanColor="this.changePlanColor($event)" @changeZoneColor="this.changeZoneColor($event)"
         @nameZoneChanged="this.nameZoneChanged($event)" @namePlanChanged="this.namePlanChanged($event)"
+:title="scriptData.title"
+        @updateTitle="scriptData.title = $event"
         @descriptionPlanChanged="this.descriptionPlanChanged($event)"></ZoneAndPlanSettingsComponent>
 
 
 
 
-      <SynopsisComponent v-show="this.showComponentObject['Synopsis']" :synopsisText=scriptData.synopsis
+      <SynopsisComponent @updateSynopsis="updateSynopsis($event)" v-show="this.showComponentObject['Synopsis']" :synopsisText=scriptData.synopsis
         :title=scriptData.title></SynopsisComponent>
 
       <ActorsComponent v-show="this.showComponentObject['Actors']" :actor-list=scriptData.actorList
@@ -104,6 +106,7 @@ import ScenesComponent from './components/ScenesComponent.vue';
 import MagasinComponent from './components/MagasinComponent.vue';
 import { objectToMarkdown } from './utils/converterMd'
 
+
 export default {
   name: 'App',
   components: {
@@ -122,9 +125,15 @@ export default {
 
   },
   methods: {
+    updateSynopsis(event) {
+      this.scriptData.synopsis = event
+      this.save()
+    },
     fileChanged(event){
       this.currentFile = event
       console.log(this.currentFile)
+      this.save()
+
     },
     loadFile(event) {
 
@@ -137,6 +146,7 @@ export default {
           console.log("chargé")
           console.log(event.target.result);
           console.log(this.scriptData)
+          this.$forceUpdate()
           // this.$forceUpdate()
         };
         reader.readAsText(file);
@@ -155,10 +165,12 @@ export default {
     },
     save() {
       localStorage.setItem('saveApp', JSON.stringify(this.scriptData))
+      console.log("saved")
     },
     load() {
       if (localStorage.getItem('saveApp')) {
         this.scriptData = JSON.parse(localStorage.getItem('saveApp'), this.reviver)
+
       }
     },
     updateMagasin(evt) {
@@ -369,7 +381,7 @@ export default {
 
       const element = document.createElement('a');
       element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(markdownString));
-      element.setAttribute('download', 'myMarkdownFile.md');
+      element.setAttribute('download', `${this.scriptData.title}.md`);
       element.style.display = 'none';
       document.body.appendChild(element);
       element.click();
