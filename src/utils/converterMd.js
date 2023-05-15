@@ -109,20 +109,31 @@ export function  getTitle(obj){
     var zone = obj.timeline.zoneList.sort((a,b)=> a.numero-b.numero)
     var mdList = ""
 
-    zone.forEach( zo =>
-            {
-                mdList += `\n\n| zoneId | Numero dans Zone | Image | time | description | paroles | Personnages |\n|-------|-------------|-----|-------------|-----|-------------|-----| \n `;
-                obj.timeline.planList.filter(plan => plan.zone === zo.numero).forEach(
-                    p => {
-                        const names = p.characters.map(obj => obj.name);
-                        mdList+= `| ${zo.numero} | ${p.numeroDsZone} | ![Konva Image](${p.planData}) |  ${p.timeDeb} / ${p.timeFin} | ${p.description} | ${p.paroles} | ${names}|\n`
-                    }
-                )
-            }
 
-    )
-    
+    zone.forEach((zo) => {
+      mdList += `\n\n| zoneId | Numero dans Zone | Image | time | description | paroles | Personnages |\n|---:|---:|----------------------------|---|---------|------|-----| \n `;
+      obj.timeline.planList
+        .filter((plan) => plan.zone === zo.numero)
+        .forEach((p) => {
+          const names = p.characters ? p.characters.map((obj) => obj.name).join(", ") : " ";
+          const planData = p.planData ? `![Konva Image](${p.planData})` : " ";
+          const description = p.description ? p.description.replace(/\|/g, "\\|").replace(/\-/g, "\\-").replace(/\n/g, " ") : " ";
+          const paroles = p.paroles ? p.paroles.replace(/\|/g, "\\|").replace(/\n/g, " ") : " ";
+          mdList += `| ${zo.numero} | ${p.numeroDsZone} | ${planData} | ${formatSeconds(
+            p.timeDeb
+          )} / ${formatSeconds(p.timeFin)} | ${description} | ${paroles} | ${names.replace(
+            /\|/g,
+            "\\|"
+          )} |\n`;
+        });
+    });
         
     return `## <center> Plan par plan </center> \n\n${mdList} \n\n `
-
+          }
+  export function formatSeconds(seconds) {
+    const dateObj = new Date(seconds * 1000);
+    const minutes = dateObj.getUTCMinutes();
+    const secondsFormatted = dateObj.getUTCSeconds().toString().padStart(2, '0');
+    const milliseconds = Math.floor(dateObj.getUTCMilliseconds() / 10).toString().padStart(2, '0');
+    return `${minutes}:${secondsFormatted}.${milliseconds}`;
   }
