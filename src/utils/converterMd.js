@@ -111,7 +111,8 @@ export function  getTitle(obj){
 
 
     zone.forEach((zo) => {
-      mdList += `\n\n| zoneId | Numero dans Zone | Image | time | description | paroles | Personnages |\n|---:|---:|----------------------------|---|---------|------|-----| \n `;
+      mdList+= `\n\n${zo.description}\n\n`
+      mdList += `\n\n| zoneId | N° ds Zone | Image | time | description | paroles | Personnages |\n|---:|---:|----------------------------|---|---------|------|-----| \n `;
       obj.timeline.planList
         .filter((plan) => plan.zone === zo.numero)
         .forEach((p) => {
