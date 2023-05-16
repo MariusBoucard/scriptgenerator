@@ -191,12 +191,13 @@ export default {
         copy(name){
             if(this.formes.find(fo => fo.name === name)){
 
-                this.copyval = this.formes.find(fo => fo.name === name)
+                this.copyval = JSON.parse(JSON.stringify(this.formes.find(fo => fo.name === name)));
             }
         },
         paste(){
             if(!(this.copyval === null || this.copyval === undefined)){
                 this.copyval.name = this.copyval.type+this.formes.length
+                console.log("pasteval",this.copyval)
                 this.formes.push(
                    this.copyval
                 )
