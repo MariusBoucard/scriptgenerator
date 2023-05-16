@@ -8,8 +8,9 @@
                     <v-stage style="border : 5px solid black" ref="stage" 
                     
                     :config="stageSize"
-                        @mousedown="handleStageMouseDown" @touchstart="handleStageMouseDown">
+                        @mousedown="handleStageMouseDown" @touchstart="handleStageMouseDown"  @contextmenu="onContextMenu($event)">
                         <v-layer ref="layer">
+                            <!-- OLD -->
                             <v-rect :config="backGround"></v-rect>
                             <v-rect v-for="item in squares" @dragmove="handleDragMove(item.type,item.name,$event)" :key="item.name" :config="item"
                                 @transformend="handleTransformEnd" />
@@ -24,6 +25,16 @@
                                 @transformend="handleTransformEnd">
 
                             </v-ellipse>
+                            <!-- NEW -->
+                            <template v-for="item in formes">
+                                <v-rect v-if="item.type === 'square'" @dragmove="handleDragMove(item.type, item.name, $event)" :key="item.name" :config="item" @transformend="handleTransformEnd" />
+                                <v-text v-else-if="item.type === 'text'" @dragmove="handleDragMove(item.type, item.name, $event)"  :config="item" @transformend="handleTransformEnd" />
+                                <v-arrow v-else-if="item.type === 'arrow'" @dragmove="handleDragMove(item.type, item.name, $event)"  :config="item" @transformend="handleTransformEnd" />
+                                <v-line v-else-if="item.type === 'line'" @dragmove="handleDragMove(item.type, item.name, $event)"  :config="item" @transformend="handleTransformEnd"></v-line>
+                                <v-ellipse v-else-if="item.type === 'ellipse'" @dragmove="handleDragMove(item.type, item.name, $event)"  :config="item" @transformend="handleTransformEnd"></v-ellipse>
+                            
+                            </template>
+
                             <v-transformer ref="transformer" />
                         </v-layer>
                     </v-stage>
@@ -145,11 +156,13 @@ export default {
     },
     data() {
         return {
+            copyval : null,
             textToAdd: "",
             stageSize: {
                 width: width,
                 height: height,
             },
+            formes : this.planImage.formes ? this.planImage.formes : [],
             ellipses: this.planImage.ellipses,
             squares: this.planImage.squares,
             arrows: this.planImage.arrows,
@@ -174,6 +187,103 @@ export default {
         };
     },
     methods: {
+        
+        copy(name){
+            if(this.formes.find(fo => fo.name === name)){
+
+                this.copyval = this.formes.find(fo => fo.name === name)
+            }
+        },
+        paste(){
+            if(!(this.copyval === null || this.copyval === undefined)){
+                this.copyval.name = this.copyval.type+this.formes.length
+                this.formes.push(
+                   this.copyval
+                )
+            }
+        },
+        front(name){
+            var index = this.formes.indexOf(this.formes.find(fo => fo.name === name))
+            if (index < this.formes.length - 1) {
+                const element = this.formes.splice(index, 1)[0];
+                this.formes.push(element);
+            }
+        },
+        back(name){
+            var index = this.formes.indexOf(this.formes.find(fo => fo.name === name))
+
+            if (index > 0 && index < this.formes.length) {
+                const element = this.formes.splice(index, 1)[0];
+                this.formes.unshift(element);
+            }
+        },
+        sendForward(name){
+            var index = this.formes.indexOf(this.formes.find(fo => fo.name === name))
+            if (index < this.formes.length - 1) {
+                const temp = this.formes[index];
+                this.formes[index] = this.formes[index + 1];
+                this.formes[index + 1] = temp;
+            }
+        },
+        sendBackward(name){
+            var index = this.formes.indexOf(this.formes.find(fo => fo.name === name))
+            if (index > 0) {
+                const temp = this.formes[index];
+                this.formes[index] = this.formes[index -1];
+                this.formes[index - 1] = temp;
+            }
+        },
+        onContextMenu(e) {
+  // prevent the browser's default menu
+    //  e.preventDefault();
+  // show the context menu
+  console.log(e)
+  this.$contextmenu({
+    x: e.evt.clientX,
+    y: e.evt.clientY,
+    items: [
+      { 
+        label: "Move forward", 
+        onClick: () => {
+            
+          this.sendForward(e.target.name());
+        }
+      },
+      { 
+        label: "Move backward",
+        onClick:  () => {
+            this.sendBackward(e.target.name());
+        } 
+      },
+      { 
+        label: "Put to front", 
+        onClick: () => {
+            
+          this.front(e.target.name());
+        }
+      },
+      { 
+        label: "Put to back", 
+        onClick: () => {
+            
+          this.back(e.target.name());
+        }
+      },
+       { 
+        label: "Copy",
+        onClick:  () => {
+           this.copy(e.target.name())
+        } 
+      },
+      { 
+        label: "Paste",
+        onClick:  () => {
+        this.paste()   
+        } 
+      },
+    ]
+  });
+},
         saveImage() {
             console.log("caca",this.planImage)
 
@@ -183,6 +293,7 @@ export default {
             // console.log(this.planimage)
             this.$emit('updateImage',{
                 planImage : {
+                    formes : this.formes,
                     ellipses : this.ellipses,
                     squares : this.squares,
                     arrows : this.arrows,
@@ -194,14 +305,14 @@ export default {
             })
         },
         updateBoundingColorSelected(event) {
-            var form = this.allforms.find(truc => truc.name === this.selectedShapeName)
+            var form = this.formes.find(truc => truc.name === this.selectedShapeName)
             if (form !== undefined) {
 
                 form.stroke = event
             }
         },
         updateColorSelected(event) {
-            var form = this.allforms.find(truc => truc.name === this.selectedShapeName)
+            var form = this.formes.find(truc => truc.name === this.selectedShapeName)
             if (form !== undefined) {
                 if (form.type === "line" || form.type === "arrow") {
                     form.stroke = event
@@ -213,64 +324,66 @@ export default {
             }
         },
         supprElem() {
-            var find = this.allforms.find(elem => elem.name === this.selectedShapeName)
+            var find = this.formes.find(elem => elem.name === this.selectedShapeName)
             console.log(find)
-            if (find !== undefined) {
-                switch (find.type) {
-                    case "square":
-                        var index = this.squares.indexOf(find)
-                        this.squares.splice(index, 1)
-                        this.selectedShapeName = ''
-                        this.updateTransformer();
-                        break;
-                    case "ellipse":
-                        var index = this.ellipses.indexOf(find)
-                        this.ellipses.splice(index, 1)
-                        this.selectedShapeName = ''
-                        this.updateTransformer();
-                        break;
-                    case "line":
-                        var index = this.lines.indexOf(find)
-                        this.lines.splice(index, 1)
-                        this.selectedShapeName = ''
-                        this.updateTransformer();
-                        break;
-                    case "text":
-                        var index = this.text.indexOf(find)
-                        this.text.splice(index, 1)
-                        this.selectedShapeName = ''
-                        this.updateTransformer();
-                        break;
-                    case "arrow":
-                        var index = this.arrows.indexOf(find)
-                        this.arrows.splice(index, 1)
-                        this.selectedShapeName = ''
-                        this.updateTransformer();
-                        break;
-
-
-                }
+            var index = this.formes.indexOf(find)
+            this.formes.splice(index,1)
+            this.updateTransformer()
+            if(find === undefined){
+                find = this.allforms.find(elem => elem.name === this.selectedShapeName)
+                if (find !== undefined) {
+                    switch (find.type) {
+                        case "square":
+                            var index = this.squares.indexOf(find)
+                            this.squares.splice(index, 1)
+                            this.selectedShapeName = ''
+                            this.updateTransformer();
+                            break;
+                        case "ellipse":
+                            var index = this.ellipses.indexOf(find)
+                            this.ellipses.splice(index, 1)
+                            this.selectedShapeName = ''
+                            this.updateTransformer();
+                            break;
+                        case "line":
+                            var index = this.lines.indexOf(find)
+                            this.lines.splice(index, 1)
+                            this.selectedShapeName = ''
+                            this.updateTransformer();
+                            break;
+                        case "text":
+                            var index = this.text.indexOf(find)
+                            this.text.splice(index, 1)
+                            this.selectedShapeName = ''
+                            this.updateTransformer();
+                            break;
+                        case "arrow":
+                            var index = this.arrows.indexOf(find)
+                            this.arrows.splice(index, 1)
+                            this.selectedShapeName = ''
+                            this.updateTransformer();
+                            break;
+                    }
+            }
 
             }
         },
         addArrow() {
-            this.arrows.push(
-                {
-                    points: [73, 70, 500, 20],
+            this.formes.push({
+                points: [73, 70, 500, 20],
                     stroke: '#000000',
                     tension: 1,
                     pointerLength: 10,
                     pointerWidth: 12,
                     hitStrokeWidth: 10,
                     type: "arrow",
-                    name: "arrow" + String(Math.floor(Math.random() * 1000)),
+                    name: "arrow" + String(this.formes.length),
                     draggable: true,
-                }
-
-            )
+            })
+           
         },
         addSquare() {
-            this.squares.push(
+            this.formes.push(
 
 
                 {
@@ -283,13 +396,13 @@ export default {
                     scaleX: 1,
                     scaleY: 1,
                     fill: 'red',
-                    name: "square" + String(Math.floor(Math.random() * 1000)),
+                    name: "square" + String(this.formes.length),
                     draggable: true,
                 })
             console.log("square added")
         },
         addText() {
-            this.text.push(
+            this.formes.push(
 
 
                 {
@@ -300,13 +413,13 @@ export default {
                     fontSize: 30,
                     fontFamily: 'Calibri',
                     fill: 'black',
-                    name: "text" + String(Math.floor(Math.random() * 1000)),
+                    name: "text" + String(this.formes.length),
                     draggable: true,
                 })
             console.log("square added")
         },
         addCircle() {
-            this.ellipses.push(
+            this.formes.push(
                 {
                     type: "ellipse",
 
@@ -316,14 +429,14 @@ export default {
                     y: 100,
                     stroke: 'black',
                     draggable: true,
-                    name: "circle" + String(Math.floor(Math.random() * 1000))
+                    name: "circle" + String(this.formes.length)
                 }
             )
             console.log("circle added")
 
         },
         addLine() {
-            this.lines.push(
+            this.formes.push(
                 {
                     type:"line",
                     x: 100,
@@ -332,7 +445,7 @@ export default {
                     scaleY: 1,
                     rotation:0,
                     points: [73, 70, 500, 20],
-                    name: 'line' + String(Math.floor(Math.random() * 1000)),
+                    name: 'line' + String(this.formes.length),
                     stroke: 'black',
                     draggable: true,
                     hitStrokeWidth: 10
@@ -342,6 +455,15 @@ export default {
         handleDragMove(type,name,evt){
 
             var rect = null
+            rect = this.formes.find(re => re.name === name)
+            if(rect !== undefined){
+                rect.rotation = evt.target.rotation();
+            rect.scaleX = evt.target.scaleX();
+            rect.scaleY = evt.target.scaleY();
+                rect.x = evt.target.x();
+                rect.y = evt.target.y();
+                return
+            }
             if(type === "line"){
 
                 rect = this.lines.find(sq => sq.name === name)
@@ -376,9 +498,20 @@ export default {
             rect.scaleY = evt.target.scaleY();
         },
         handleTransformEnd(e) {
+            var rect = this.formes.find(r => r.name === this.selectedShapeName)
+            if(rect !== undefined){
+                rect.x = e.target.x();
+                rect.y = e.target.y();
+                rect.rotation = e.target.rotation();
+                rect.scaleX = e.target.scaleX();
+                rect.scaleY = e.target.scaleY();
+                return
+            }
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
-            const rect = this.allforms.find(
+
+
+            rect = this.allforms.find(
                 (r) => r.name === this.selectedShapeName
             );
             console.log(rect)
@@ -410,7 +543,14 @@ export default {
 
             // find clicked rect by its name
             const name = e.target.name();
-            const rect = this.allforms.find((r) => r.name === name);
+            var rect = this.allforms.find((r) => r.name === name);
+            if (rect) {
+                this.selectedShapeName = name;
+                this.updateTransformer();
+                return
+            }   
+
+            rect = this.formes.find((r) => r.name === name);
             if (rect) {
                 this.selectedShapeName = name;
             } else {
