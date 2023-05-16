@@ -131,6 +131,7 @@ export default {
         var zo =this.scriptData.timeline.zoneList.find(zone => zone.numero === evt.zonenb)
         zo.description = evt.value
         console.log(zo,"zone desc update")
+        this.save()
     },
     updateSynopsis(event) {
       this.scriptData.synopsis = event

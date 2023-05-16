@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "This script generator has to objectiveto provide to the user an immersive experience through it's music listening to write the most relevent Music video",
-  "author":"Marius Boucard Bocciarelli",
+  "author": "Marius Boucard Bocciarelli",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -13,9 +13,9 @@
     "postuninstall": "electron-builder install-app-deps",
     "rebuild": "electron-rebuild"
   },
-  
   "main": "background.js",
   "dependencies": {
+    "@imengyu/vue3-context-menu": "^1.2.6",
     "babel-runtime": "^6.26.0",
     "core-js": "^3.30.2",
     "konva": "^9.0.1",
