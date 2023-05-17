@@ -51,6 +51,8 @@
 
     <div class="timeline">
       <div v-for="zone in timelineEvent" :key="zone.id" :style="zone.style"></div>
+            <div class="current-time-bar" :style="currentTimeBarStyle"></div>
+
     </div>
 
 
@@ -280,7 +282,10 @@ export default {
           style: {
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
-            backgroundColor: zone.color // assuming you have a property called "color" on your element
+            backgroundColor: zone.color, // assuming you have a property called "color" on your element
+            'border-style' : 'none none none solid' ,
+            'border-width' : '1px',
+            'border-color' : 'black'
           }
         };
       });
@@ -303,7 +308,10 @@ export default {
             height: '100%',
             left: `${startPercent}%`,
             width: `${widthPercent}%`,
-            backgroundColor: zone.color // assuming you have a property called "color" on your element
+            backgroundColor: zone.color, // assuming you have a property called "color" on your element
+            'border-style' : 'none none none solid' ,
+            'border-width' : '1px',
+            'border-color' : 'black'
           }
         };
       });

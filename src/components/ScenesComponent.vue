@@ -45,6 +45,8 @@
                     <CanvasComponent
                     :planImage="scene.planImage"
                     :backgroundColor="getBackground(scene.id)"
+                    :selectedScenes="sceneSelectedList"
+                    @copyScene="copyScene(scene.zone,scene.numeroDsZone,$event)"
                     @updateImage=updateImage(scene.zone,scene.numeroDsZone,$event)></CanvasComponent>
               </td>
               <td class="mytd">
@@ -249,6 +251,22 @@ export default{
         unusedCharacter(zone,nbDsZone){
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
             return this.usableCharacterListComp.filter(item => !scene.characters.includes(item));
+        },
+        copyScene(zone,nbDsZone,evt){
+            
+
+                var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
+                var copy = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === evt)
+                console.log(copy)
+                scene.planImage = JSON.parse(JSON.stringify(copy.planImage))
+                if(copy.data!==undefined){
+                    scene.planData = JSON.parse(JSON.stringify(copy.data))
+
+                }
+
+                console.log("caca",copy)
+                this.$emit('sceneUpdated',scene)
+            
         },
         updateImage(zone,nbDsZone,evt){
             console.log(this.planListComp)

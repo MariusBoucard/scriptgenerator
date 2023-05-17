@@ -3,7 +3,7 @@
 
         <div class="containerCanvas">
             <div class="column-left">
-                <div ref="outterDiv" style="width : 100%;height:100%;">
+                <div ref="outterDiv" @blur="saveImage()" style="width : 100%;height:100%;">
 
                     <v-stage style="border : 5px solid black" ref="stage" 
                     
@@ -93,7 +93,8 @@ const height = ref(null)
 export default {
     props: {
         planImage : { required: true, type: Object },
-        backgroundColor : {type : String}
+        backgroundColor : {type : String},
+        selectedScenes : {required : true, type : [Object]}
     },
     setup() {
         const outterDiv = ref(null);
@@ -114,6 +115,21 @@ export default {
         };
     },
     watch : {
+        planImage : {
+            handler(newvalue,oldvalue){
+                this.formes = newvalue.formes ? newvalue.formes : []
+                console.log(this.formes)
+                this.$nextTick(() => {
+                    console.log('paint')
+                    const stage = this.$refs.stage.getNode();
+                    console.log(stage)
+        if (stage) {
+          stage.draw();
+        }
+                });
+            },
+            deep : true
+        },
         backgroundColor : {
             handler(newvalue,oldValue){
                this.backGround = {
@@ -132,6 +148,7 @@ export default {
             }
         }
     },
+
     computed: {
         selectedBackground() {
             var form = this.allforms.find(form => form.name === this.selectedShapeName)
@@ -191,15 +208,16 @@ export default {
         copy(name){
             if(this.formes.find(fo => fo.name === name)){
 
-                this.copyval = JSON.parse(JSON.stringify(this.formes.find(fo => fo.name === name)));
+                this.copyval = JSON.stringify(this.formes.find(fo => fo.name === name));
             }
         },
         paste(){
             if(!(this.copyval === null || this.copyval === undefined)){
-                this.copyval.name = this.copyval.type+this.formes.length
+                var ca = JSON.parse(this.copyval)
+                ca.name = ca.type+this.formes.length
                 console.log("pasteval",this.copyval)
                 this.formes.push(
-                   this.copyval
+                   ca
                 )
             }
         },
@@ -282,9 +300,21 @@ export default {
         this.paste()   
         } 
       },
+      {
+        label : 'copy Scene',
+        children : this.menuCopy()
+      }
+
     ]
   });
 },
+    menuCopy(){
+        const cop = []
+
+        this.selectedScenes.forEach(scene => cop.push({label : `Scene n° ${scene.numeroDsZone}`
+                                                        , onClick : () => this.$emit('copyScene',scene.numeroDsZone)}))
+                                                        return cop
+    },
         saveImage() {
             console.log("caca",this.planImage)
 
@@ -376,7 +406,7 @@ export default {
                     tension: 1,
                     pointerLength: 10,
                     pointerWidth: 12,
-                    hitStrokeWidth: 10,
+                    hitStrokeWidth: 30,
                     type: "arrow",
                     name: "arrow" + String(this.formes.length),
                     draggable: true,
@@ -445,11 +475,11 @@ export default {
                     scaleX: 1,
                     scaleY: 1,
                     rotation:0,
-                    points: [73, 70, 500, 20],
+                    points: [20, 70, 80, 70],
                     name: 'line' + String(this.formes.length),
                     stroke: 'black',
                     draggable: true,
-                    hitStrokeWidth: 10
+                    hitStrokeWidth: 30
                 }
             )
         },

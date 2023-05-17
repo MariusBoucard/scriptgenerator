@@ -7,9 +7,9 @@
         <li><a @click="updateShow('Actors')">Actors</a></li>
         <li><a @click="updateShow('Costumes')">Costumes</a></li>
         <li><a @click="updateShow('PlaySound')">Timeline</a></li>
-        <li><a @click="updateShow('ZoneAndPlanSettings')">Settings </a></li>
         <li><a @click="updateShow('Scenes')">Scenes </a></li>
         <li><a @click="updateShow('Magasin')">Magasin </a></li>
+        <li><a @click="updateShow('ZoneAndPlanSettings')">Settings </a></li>
         <li style="float:right" @click="exportMd()"><a>Export as Md file</a></li>
         <li style="float:right" @click="saveAsAFile()"><a>Save</a></li>
         <li style="float:right" @click="loadFile()">
