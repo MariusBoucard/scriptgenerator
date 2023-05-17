@@ -401,7 +401,7 @@ export default {
         },
         addArrow() {
             this.formes.push({
-                points: [73, 70, 500, 20],
+                points: [20, 70, 200, 70],
                     stroke: '#000000',
                     tension: 1,
                     pointerLength: 10,
@@ -420,13 +420,13 @@ export default {
                 {
                     type: "square",
                     rotation: 0,
-                    x: 10,
-                    y: 10,
+                    x: 100,
+                    y: 100,
                     width: 100,
                     height: 100,
                     scaleX: 1,
                     scaleY: 1,
-                    fill: 'red',
+                    fill: 'brown',
                     name: "square" + String(this.formes.length),
                     draggable: true,
                 })
@@ -453,7 +453,7 @@ export default {
             this.formes.push(
                 {
                     type: "ellipse",
-
+                    fill: 'grey',
                     width: 100,
                     height: 100,
                     x: 100,
@@ -475,7 +475,7 @@ export default {
                     scaleX: 1,
                     scaleY: 1,
                     rotation:0,
-                    points: [20, 70, 80, 70],
+                    points: [20, 70, 200, 70],
                     name: 'line' + String(this.formes.length),
                     stroke: 'black',
                     draggable: true,
