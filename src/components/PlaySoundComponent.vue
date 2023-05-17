@@ -103,6 +103,8 @@
               </td>
             </tr>
           </table>
+          <button @click="combleVideZone()">Fill Gap</button>
+
         </div>
         <div class="column2">
 
@@ -133,6 +135,7 @@
               </td>
             </tr>
           </table>
+          <button @click="combleVidePlan()">Fill Gap</button>
         </div>
 
       </div>
@@ -318,6 +321,21 @@ export default {
     }
   },
   methods: {
+    combleVidePlan(){
+      this.eventList.sort((a,b)=> a.timeDeb-b.timeDeb)
+      for(var i=0;i<this.eventList.length-1;i++){
+        this.eventList[i].timeFin=this.eventList[i+1].timeDeb
+      }
+      this.$emit('planUpdated', this.eventList)
+    },
+    combleVideZone(){
+      this.zoneList.sort((a,b)=> a.timeDeb-b.timeDeb)
+      for(var i=0;i<this.zoneList.length-1;i++){
+        this.zoneList[i].timeFin=this.zoneList[i+1].timeDeb
+      
+      }
+      this.$emit('zoneUpdated', this.zoneList)
+    },
      formatSeconds(seconds) {
   const dateObj = new Date(seconds * 1000);
   const minutes = dateObj.getUTCMinutes();
