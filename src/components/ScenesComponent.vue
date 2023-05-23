@@ -50,10 +50,10 @@
                     @updateImage=updateImage(scene.zone,scene.numeroDsZone,$event)></CanvasComponent>
               </td>
               <td class="mytd">
-                <textarea class="custom-textarea" style="display:flex"  v-model=scene.description placeholder="more info you might add" @input="updateDescription(scene.zone,scene.numeroDsZone,$event.target.value)"></textarea>
+                <textarea class="custom-textarea" style="display:flex"  :value=scene.description placeholder="more info you might add" @blur="updateDescription(scene.zone,scene.numeroDsZone,$event.target.value)"></textarea>
 </td>
               <td>
-                <textarea class="custom-textarea" style="display:flex"  v-model=scene.paroles placeholder="more info you might add" @input="updateParoles(scene.zone,scene.numeroDsZone,$event.target.value)"></textarea>
+                <textarea class="custom-textarea" style="display:flex"  :value=scene.paroles placeholder="more info you might add" @blur="updateParoles(scene.zone,scene.numeroDsZone,$event.target.value)"></textarea>
 
               </td>
               <td style="display: block;margin-top:">

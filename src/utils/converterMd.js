@@ -25,11 +25,11 @@ export function objectToMarkdown(obj) {
   }
 
 export function  getTitle(obj){
-    return `## <center> ${obj.title} </center>\n\n<center>This Script has been written by : </center>`;
+    return `## <center>  ${obj.title} </center>\n\n<center>This Script has been written by : ${obj.author}</center>`;
   }
 
   export function  getSynopsis(obj){
-    return `## <center>Synopsis</center>\n\n${obj.synopsis}\n\n `;
+    return `\n\n## <center> Synopsis</center>\n\n${obj.synopsis}\n\n `;
   }
 
   export function getActors(obj){

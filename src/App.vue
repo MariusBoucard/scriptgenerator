@@ -38,12 +38,16 @@
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
       <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']"
         :zoneList=scriptData.usableZoneList :planList=scriptData.usablePlanList
+        :author="scriptData.author"
         @zoneUpdate="this.scriptData.usableZoneList = $event" @planUpdate="this.scriptData.usablePlanList = $event"
         @deletePlan="this.deleteUsablePlan($event)" @deleteZone="this.deleteUsableZone($event)"
         @changePlanColor="this.changePlanColor($event)" @changeZoneColor="this.changeZoneColor($event)"
         @nameZoneChanged="this.nameZoneChanged($event)" @namePlanChanged="this.namePlanChanged($event)"
         :title="scriptData.title"
-        @updateTitle="scriptData.title = $event"
+        @updateTitle="scriptData.title = $event;save()"
+
+        @updateAuthor="scriptData.author = $event;save()"
+      
         @descriptionPlanChanged="this.descriptionPlanChanged($event)"></ZoneAndPlanSettingsComponent>
 
 
@@ -431,6 +435,7 @@ export default {
       scriptData: {
         title: "someTitle",
         synopsis: "",
+        author:"",
         actorList: [
 
         ],
