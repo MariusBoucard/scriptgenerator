@@ -246,7 +246,7 @@ export default{
     });
         },
         getBackground(id){
-            return this.usablePlanList.find(plan => plan.id === id).color
+            return this.usablePlanList.find(plan => parseInt(plan.id) === parseInt(id)).color
         },
         unusedCharacter(zone,nbDsZone){
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
@@ -310,7 +310,9 @@ export default{
             this.$emit('sceneUpdated',scene)
         },
         getUsableSceneData(id) {
-            return this.usablePlanList.find(a => a.id === id);
+            console.log(id)
+            // console.log( )
+            return this.usablePlanList.find(a => parseInt(a.id) === parseInt(id));
         },
         nextZone() {
             this.index = ((this.index + 1) % this.nbZone);

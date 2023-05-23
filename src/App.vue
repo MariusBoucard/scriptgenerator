@@ -71,10 +71,12 @@
         :planList=scriptData.timeline.planList 
         :listeZone=scriptData.timeline.zoneList
         @settingsDisplay="this.showSettings = !this.showSettings"
-         @planUpdated="updatePlan($event)"
+        @planUpdated="updatePlan($event)"
         @zoneUpdated="updateZone($event)" 
         @fileLoad="fileLoad($event)"
-        @fileChanged="fileChanged($event)"></PlaySoundComponent>
+        @fileChanged="fileChanged($event)"
+        @setPlanId="planIdChanged($event)"
+        @setZoneName="zoneIdUpdate($event)"></PlaySoundComponent>
 
 
 
@@ -126,6 +128,20 @@ export default {
 
   },
   methods: {
+    zoneIdUpdate(evt){
+      console.log(evt)
+      var chgt = this.scriptData.timeline.zoneList.find(zo => zo.timeDeb === evt.item.timeDeb)
+      chgt.id = evt.value
+      // var chgt =  this.scriptData.timeline.planList.find(elm => elm.timeDeb === evt.item.timeDeb)
+      // chgt.id = evt.value
+      this.save()
+    },
+    planIdChanged(evt){
+      var chgt =  this.scriptData.timeline.planList.find(elm => elm.timeDeb === evt.item.timeDeb)
+      chgt.id = evt.value
+      console.log(chgt)
+      this.save()
+    },
     updateDescriptionZone(evt){
       
         var zo =this.scriptData.timeline.zoneList.find(zone => zone.numero === evt.zonenb)

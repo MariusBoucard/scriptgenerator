@@ -85,7 +85,7 @@
               <td>
                 <!-- todo in here -->
                 <select @change="setZoneName(item, $event.target.value)">
-                  <option value="{{zoneNameFromId(item.id)}}" selected> {{ zoneNameFromId(item.id) }}</option>
+                  <option :value="item.id" selected> {{ zoneNameFromId(item.id) }}</option>
 
                   <option v-for="zoneName in usableZoneList" :value="zoneName.id">{{ zoneName.name }}</option>
 
@@ -122,7 +122,13 @@
 
             <tr v-for="item in this.eventListComp" :key="item">
 
-              <td>{{ item.id }}</td>
+              <td>     <!-- todo in here -->
+                <select @change="setPlanId(item, $event.target.value)">
+                  <option value="{{item.id)}}" selected> {{ item.id }}</option>
+
+                  <option v-for="zoneName in usablePlanList" :value="zoneName.id">{{ zoneName.id }}</option>
+
+                </select></td>
               <td>{{ item.zone }}</td>
               <td>{{ item.numeroDsZone }}</td>
               <td>{{ formatSeconds(item.timeDeb) }}</td>
@@ -303,7 +309,7 @@ export default {
         const startPercent = (startTime / totalTime) * 100;
         const endPercent = (endTime / totalTime) * 100;
         const widthPercent = endPercent - startPercent;
-        var zone = this.usablePlanList.find(elem => elem.id === element.id)
+        var zone = this.usablePlanList.find(elem => parseInt(elem.id) === parseInt(element.id))
 
         return {
           id: index,
@@ -382,12 +388,23 @@ export default {
       }
     },
 
-    setZoneName(item, event) {
+    setPlanId(item, event) {
       //TODO connect event
       console.log(item, event)
-      var find = this.zoneList.find(elem => elem.timeDeb === item.timeDeb)
-      find.id = event
-      this.$emit('setZoneName', this.zoneList)
+      var find = this.eventList.find(elem => elem.timeDeb === item.timeDeb)
+   
+      this.$emit('setPlanId', 
+        {
+        "item" : find,
+        "value" : event 
+      })
+    },
+    setZoneName(item, event) {
+      //TODO connect event
+      this.$emit('setZoneName', {
+        "item" : item,
+        "value" : event
+      })
     },
 
 
