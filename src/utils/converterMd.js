@@ -112,15 +112,15 @@ export function  getTitle(obj){
 
     zone.forEach((zo) => {
       mdList += `\n\n${zo.description}\n\n`;
-      mdList += `\n\n| zoneId | N° ds zone | Image | time | description | paroles | Personnages |\n|-|-|--------------------------------------|-|---------|----|---| \n`;
+      mdList += `\n\n| Scene | Image | time | description | paroles | Personnages |\n|-|-|--------------------------------------|-|---------|----|---| \n`;
       obj.timeline.planList
         .filter((plan) => plan.zone === zo.numero)
         .forEach((p) => {
           const names = p.characters ? p.characters.map((obj) => obj.name).join(", ") : " ";
-          const planData = p.planData ? `<div style="width:290px">![Konva Image](${p.planData})</div>` : " ";
+          const planData = p.planData ? `<div style="width:260px">![Konva Image](${p.planData})</div>` : " ";
           const description = p.description ? p.description.replace(/\|/g, "\\|").replace(/\-/g, "\\-").replace(/\n/g, " ") : " ";
           const paroles = p.paroles ? p.paroles.replace(/\|/g, "\\|").replace(/\n/g, " ") : " ";
-          mdList += `| ${zo.numero} | ${p.numeroDsZone} | ${planData} | ${formatSeconds(
+          mdList += `| ${zo.numero}.${p.numeroDsZone} | ${planData} | ${formatSeconds(
             p.timeDeb
           )} / ${formatSeconds(p.timeFin)} | ${description} | ${paroles} | ${names.replace(
             /\|/g,
