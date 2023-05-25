@@ -74,6 +74,7 @@
         :class="this.showSettings ? 'reduit' : 'plein'"
         :planList=scriptData.timeline.planList 
         :listeZone=scriptData.timeline.zoneList
+        @delSong="delSongPath($event)"
         @settingsDisplay="this.showSettings = !this.showSettings"
         @planUpdated="updatePlan($event)"
         @zoneUpdated="updateZone($event)" 
@@ -132,6 +133,9 @@ export default {
 
   },
   methods: {
+    delSongPath(numero){
+      this.scriptData.timeline.songPath.splice(numero,1)
+    },
     zoneIdUpdate(evt){
       console.log(evt)
       var chgt = this.scriptData.timeline.zoneList.find(zo => zo.timeDeb === evt.item.timeDeb)

@@ -215,6 +215,9 @@ export default {
     };
   },
   watch: {
+    songPathProp(value){
+      this.songPath = value
+    },
 
     visible(value) {
       if (value) {
@@ -335,7 +338,8 @@ export default {
       if(index>-1){
         console.log("great")
 
-        this.songPath.splice(index, 1);
+        // this.songPath.splice(index, 1);
+        this.$emit('delSong',index)
       }
 
     },
