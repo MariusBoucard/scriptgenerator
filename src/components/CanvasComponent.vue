@@ -1,5 +1,5 @@
 <template>
-    <div style="height:100%;width:100%">
+    <div style="height:450px;width:750px">
 
         <div class="containerCanvas">
             <div class="column-left">
@@ -40,6 +40,7 @@
                     </v-stage>
                 </div>
             </div>
+
             <div class="column-right" style="display: block;">
                 <p>Background color :</p>
                 <input type="color" :value=selectedBackground @input="updateColorSelected($event.target.value)">

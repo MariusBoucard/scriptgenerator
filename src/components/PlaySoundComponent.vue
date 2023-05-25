@@ -15,6 +15,7 @@
       <ol class="ol-days">
         <li v-for="item in this.songPathComp" :key="item" @click="this.launchFile(item)">
           {{ item.name }}
+          <button class="button-cross" @click="remove(item)"></button>
         </li>
       </ol>
 
@@ -327,6 +328,17 @@ export default {
     }
   },
   methods: {
+    remove(item){
+      var index = this.songPath.indexOf(item)
+      console.log(index)
+
+      if(index>-1){
+        console.log("great")
+
+        this.songPath.splice(index, 1);
+      }
+
+    },
     combleVidePlan(){
       this.eventList.sort((a,b)=> a.timeDeb-b.timeDeb)
       for(var i=0;i<this.eventList.length-1;i++){
@@ -829,7 +841,38 @@ ul.horizontal-list li {
   margin-left: 0;
   padding: 0;
 }
+.button-cross {
+  display: inline-block;
+  position: relative;
+  margin-left: 1em;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: none;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
 
+.button-cross::before,
+.button-cross::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 2px;
+  background-color: #000;
+}
+
+.button-cross::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.button-cross::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
 input[type="file"] {
   z-index: -1;
   top: 15px;
