@@ -15,7 +15,7 @@
     <div >
         <!-- <p>This scene is a {{ getUsableSceneData(selectedId).name }} and starts at : {{ formatSeconds(parseInt(selectedZone.timeDeb)) }} / Ends at : {{ formatSeconds(selectedZone.timeFin) }} </p>    -->
            <!-- <p>This scene starts at : {{ formatSeconds(parseInt(selectedZone.timeDeb)) }} {{ selectedZone.timeDeb}}/ Ends at : {{ formatSeconds(selectedZone.timeFin) }} </p>    -->
-
+            <button @click="addScene(sceneSelectedList,0)">AddScene</button>
     </div> 
         <!-- <p>{{ selectedZone }}</p> -->
         
@@ -38,6 +38,7 @@
                 <button style="margin-top:20px" @click="playSound(scene.timeDeb,scene.timeFin)">Play</button>
                 <div>
                     <p>Debut : {{ formatSeconds(scene.timeDeb) }}</p>
+                    
                     <p>Fin : {{ formatSeconds(scene.timeFin) }}</p>
                 </div>
             </td>
@@ -91,7 +92,7 @@
 </template>
 <script>
 import CanvasComponent from './CanvasComponent.vue'
-
+import Flag from '@/class/Flag';
 export default{
     props: {
         currentSoundLink : {required : true, type : String},
@@ -202,6 +203,15 @@ export default{
         }
     },
     methods: {
+        addScene(listItem,newScenePosition){
+            console.log(listItem)
+            if(listItem.length>0){
+
+                
+                var flag = new Flag(listItem.at(0).id, listItem.at(0).zone, newScenePosition, listItem.at(0).timeDeb, listItem.at(0).timeDeb+1)
+                this.$emit('addFlag',flag)
+            }
+        },
         updateDescriptionZone(evt){
             var a = this.selectedZone
             console.log(a)
