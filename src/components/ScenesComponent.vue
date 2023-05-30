@@ -39,7 +39,21 @@
                 <div>
                     <p>Debut : {{ formatSeconds(scene.timeDeb) }}</p>
                     
+                                <select @change="changeTimeDeb(scene, $event.target.value)" >
+                                    <option :value="scene.timeDeb">{{formatSeconds(scene.timeDeb)}}</option> <!-- Default empty option -->
+            <option v-for="time in getTimeOptions()" :key="time" :value="time">
+                {{ formatSeconds(time) }}
+            </option>
+            </select>
+
+
                     <p>Fin : {{ formatSeconds(scene.timeFin) }}</p>
+                    <select @change="changeTimeEnd(scene, $event.target.value)" >
+                                    <option :value="scene.timeFin">{{formatSeconds(scene.timeFin)}}</option> <!-- Default empty option -->
+            <option v-for="time in getTimeOptions()" :key="time" :value="time">
+                {{ formatSeconds(time) }}
+            </option>
+            </select>
                 </div>
             </td>
               <td class="mytd">
@@ -203,6 +217,36 @@ export default{
         }
     },
     methods: {
+        changeTimeDeb(scene,evt){
+            console.log(scene,evt)
+            this.$emit("changeDeb",{
+                scene : scene,
+                value : evt
+            })
+           
+        },
+        changeTimeEnd(scene,evt){
+            console.log("pute")
+            this.$emit("changeEnd",{
+                scene : scene,
+                value : evt
+            })
+
+        },
+        getTimeOptions() {
+            console.log(this.selectedZone)
+      const rangeStart = this.selectedZone[0].timeDeb
+      const rangeEnd = this.selectedZone[0].timeFin;
+      const step = 0.1;
+        console.log(rangeStart)
+        console.log(rangeEnd)
+      const options = [];
+      for (let time = rangeStart; time <= rangeEnd; time += step) {
+        options.push(time);
+      }
+      console.log(options)
+      return options;
+    },
         addScene(listItem,newScenePosition){
             console.log(listItem)
             if(listItem.length>0){

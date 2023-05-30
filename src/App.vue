@@ -34,6 +34,9 @@
         :planList=scriptData.timeline.planList :usableCharacterList=scriptData.characterList
         :currentSoundLink="currentFile"
         @updateDescriptionZone="updateDescriptionZone($event)"
+        @addFlag="addFlag($event)"
+        @changeDeb="changeDebut($event)"
+        @changeEnd="changeEnd($event)"
         @sceneUpdated="updateScene($event)"></ScenesComponent>
       <!-- <CanvasComponent :planimage=test></CanvasComponent> -->
       <ZoneAndPlanSettingsComponent v-show="this.showComponentObject['ZoneAndPlanSettings']"
@@ -133,6 +136,45 @@ export default {
 
   },
   methods: {
+    changeDebut(evt){
+      var chgt = this.scriptData.timeline.planList.find(plan => (plan.timeDeb === evt.scene.timeDeb && plan.timeFin === evt.scene.timeFin) )
+      chgt.timeDeb = evt.value
+      this.scriptData.timeline.planList.sort((a,b) => a.timeDeb - b.timeDeb)
+      this.scriptData.timeline.zoneList.forEach(zone => {
+        const filteredItems = this.scriptData.timeline.planList.filter(item => item.timeDeb > zone.timeDeb && item.timeDeb < zone.timeFin);
+        filteredItems.sort((a, b) => a.timeDeb - b.timeDeb)
+        filteredItems.forEach((item, index) => {
+          item.numeroDsZone = index + 1;
+          item.zone = zone.numero
+        });
+      })
+    },
+    changeEnd(evt){
+      var chgt = this.scriptData.timeline.planList.find(plan => (plan.timeDeb === evt.scene.timeDeb && plan.timeFin === evt.scene.timeFin) )
+      chgt.timeFin = evt.value
+      this.scriptData.timeline.planList.sort((a,b) => a.timeDeb - b.timeDeb)
+      this.scriptData.timeline.zoneList.forEach(zone => {
+        const filteredItems = this.scriptData.timeline.planList.filter(item => item.timeDeb > zone.timeDeb && item.timeDeb < zone.timeFin);
+        filteredItems.sort((a, b) => a.timeDeb - b.timeDeb)
+        filteredItems.forEach((item, index) => {
+          item.numeroDsZone = index + 1;
+          item.zone = zone.numero
+        });
+      })
+    },
+    addFlag(evt){
+      this.scriptData.timeline.planList.push(evt)
+      //reorder par timeDeb+ refaire les numeros
+      this.scriptData.timeline.planList.sort((a,b) => a.timeDeb - b.timeDeb)
+      this.scriptData.timeline.zoneList.forEach(zone => {
+        const filteredItems = this.scriptData.timeline.planList.filter(item => item.timeDeb > zone.timeDeb && item.timeDeb < zone.timeFin);
+        filteredItems.sort((a, b) => a.timeDeb - b.timeDeb)
+        filteredItems.forEach((item, index) => {
+          item.numeroDsZone = index + 1;
+          item.zone = zone.numero
+        });
+      })
+    },
     delSongPath(numero){
       this.scriptData.timeline.songPath.splice(numero,1)
     },
