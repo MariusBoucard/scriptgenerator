@@ -33,7 +33,8 @@
 
             <tr v-for="scene in sceneSelectedList" :key="scene"  >
 
-              <td >{{ scene.id }}  <p>{{  getUsableSceneData(scene.id).name}}</p></td>
+              <td >{{ scene.id }}  <p>{{  getUsableSceneData(scene.id).name}}</p>
+            <button @click="supprElement(scene)">delPlan</button></td>
               <td >{{ scene.numeroDsZone }}
                 <button style="margin-top:20px" @click="playSound(scene.timeDeb,scene.timeFin)">Play</button>
                 <div>
@@ -94,7 +95,12 @@
                
               </td>
             <td>{{ getUsableSceneData(scene.id).description }}</td>
-            <td> <div :style="{backgroundColor : getUsableSceneData(scene.id).color }" style="width:60px; height:40px"></div></td>
+            <td> 
+                <button @click="addBefore(scene)">addBefore</button>
+                <div :style="{backgroundColor : getUsableSceneData(scene.id).color }" style="width:60px; height:40px"></div>
+                <button @click="addAfter(scene)">addAfter</button>
+
+            </td>
              
             </tr>
           </table>
@@ -217,6 +223,21 @@ export default{
         }
     },
     methods: {
+        addBefore(scene){
+         
+                
+                var flag = new Flag(scene.id, scene.zone, scene.numeroDsZone, scene.timeDeb, scene.timeDeb+0.05)
+                this.$emit('addFlag',flag)
+                this.changeTimeDeb(scene,scene.timeDeb+0.05)
+        },
+        addAfter(scene){
+            var flag = new Flag(scene.id, scene.zone, scene.numeroDsZone, scene.timeFin-0.05, scene.timeFin)
+                this.$emit('addFlag',flag)
+                this.changeTimeEnd(scene,scene.timeFin-0.05)
+        },
+        supprElement(scene){
+            this.$emit('delPlan',scene)
+        },
         changeTimeDeb(scene,evt){
             console.log(scene,evt)
             this.$emit("changeDeb",{
@@ -231,7 +252,6 @@ export default{
                 scene : scene,
                 value : evt
             })
-
         },
         getTimeOptions() {
             console.log(this.selectedZone)

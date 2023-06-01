@@ -35,6 +35,7 @@
         :currentSoundLink="currentFile"
         @updateDescriptionZone="updateDescriptionZone($event)"
         @addFlag="addFlag($event)"
+        @delPlan="delPlan($event)"
         @changeDeb="changeDebut($event)"
         @changeEnd="changeEnd($event)"
         @sceneUpdated="updateScene($event)"></ScenesComponent>
@@ -48,9 +49,7 @@
         @nameZoneChanged="this.nameZoneChanged($event)" @namePlanChanged="this.namePlanChanged($event)"
         :title="scriptData.title"
         @updateTitle="scriptData.title = $event;save()"
-
         @updateAuthor="scriptData.author = $event;save()"
-      
         @descriptionPlanChanged="this.descriptionPlanChanged($event)"></ZoneAndPlanSettingsComponent>
 
 
@@ -136,6 +135,20 @@ export default {
 
   },
   methods: {
+    delPlan(evt){
+      var chgt = this.scriptData.timeline.planList.find(plan => (plan.timeDeb === evt.timeDeb && plan.timeFin === evt.timeFin) )
+      var index = this.scriptData.timeline.planList.indexOf(chgt)
+      this.scriptData.timeline.planList.splice(index,1)
+      this.scriptData.timeline.planList.sort((a,b) => a.timeDeb - b.timeDeb)
+      this.scriptData.timeline.zoneList.forEach(zone => {
+        const filteredItems = this.scriptData.timeline.planList.filter(item => item.timeDeb > zone.timeDeb && item.timeDeb < zone.timeFin);
+        filteredItems.sort((a, b) => a.timeDeb - b.timeDeb)
+        filteredItems.forEach((item, index) => {
+          item.numeroDsZone = index + 1;
+          item.zone = zone.numero
+        });
+      })
+    },
     changeDebut(evt){
       var chgt = this.scriptData.timeline.planList.find(plan => (plan.timeDeb === evt.scene.timeDeb && plan.timeFin === evt.scene.timeFin) )
       chgt.timeDeb = evt.value
@@ -267,9 +280,8 @@ export default {
       this.scriptData.timeline.planList = evt
       console.log("updatePlan", this.scriptData.timeline.planList)
       this.save()
-
-
     },
+
     fileLoad(evt) {
       console.log("fileLoad", evt)
       this.scriptData.timeline.songPath = evt
