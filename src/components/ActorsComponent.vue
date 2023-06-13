@@ -18,13 +18,12 @@
     <div class="form-container">
         <h3>Add an actor or a role to him</h3>
         <div class="form-group">
+          <select v-model="this.currentActorDrop">
+                    <option v-for="out in actorList" :value="out.name">{{out.name}}</option>
+                </select>
             <input type="text" v-model="this.currentActor" placeholder="Actor name"/>
             <input type="text" v-model="this.currentCharacter"  placeholder="Character he will play"/>
-            <button @click="this.$emit('addActor', {
-              'currentActor' : this.currentActor,
-              'currentCharacter' : this.currentCharacter,
-              'currentInfo' : this.currentInfo
-            })">
+            <button @click="addActor()">
                 Add it to list
             </button>
 
@@ -57,13 +56,27 @@ export default{
            
             currentActor:"",
             currentCharacter:"",
-            currentInfo : ""
+            currentInfo : "",
+            currentActorDrop : "",
         }
     },
     methods : {
         storageUpdate(){
             localStorage.setItem('actorList',JSON.stringify(this.actorList))
         },
+        addActor(){
+        var actorAdd = ""
+          if(this.currentActor ===""){
+            actorAdd = this.currentActorDrop
+          }else {
+            actorAdd = this.currentActor
+          }
+          this.$emit('addActor', {
+              'currentActor' : actorAdd,
+              'currentCharacter' : this.currentCharacter,
+              'currentInfo' : this.currentInfo
+            })
+        }
        
     }
 
