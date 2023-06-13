@@ -21,9 +21,12 @@
     <div class="form-container">
         <h3>Add a costume to character</h3>
         <div class="form-group">
+           <select v-model="this.currentCharacterDrop">
+                    <option v-for="out in characterList" :value="out.name">{{out.name}}</option>
+                </select>
             <input type="text" v-model="this.currentCharacter" placeholder="Character name"/>
             <input type="text" v-model="this.currentCostume"  placeholder="Accessoire to add"/>
-            <button @click="this.$emit('addCostume', { currentCharacter : this.currentCharacter, currentCostume : this.currentCostume, currentInfo : this.currentInfo})">
+            <button @click="addCostume()">
                 Add it to list
             </button>
 
@@ -55,11 +58,21 @@ export default{
         return {
             currentCharacter:"",
             currentCostume:"",
-            currentInfo : ""
+            currentInfo : "",
+            currentCharacterDrop : ""
         }
     },
     methods : {
-     
+     addCostume(){
+      var charactToAdd = ""
+      if(this.currentCharacter === ""){
+        charactToAdd = this.currentCharacterDrop
+      }
+      else {
+        charactToAdd = this.currentCharacter
+      }
+      this.$emit('addCostume', { currentCharacter : charactToAdd, currentCostume : this.currentCostume, currentInfo : this.currentInfo})
+     }
         
     }
 
