@@ -262,6 +262,41 @@ export default {
     x: e.evt.clientX,
     y: e.evt.clientY,
     items: [
+    {
+        label : "Add Forme",
+        children : [
+
+            { 
+              label: "Add Square", 
+              onClick: () => {
+                  
+                this.addSquare();
+              }
+            },
+            { 
+              label: "Add Circle", 
+              onClick: () => {
+                  
+                this.addCircle();
+              }
+            },
+            { 
+              label: "Add Line", 
+              onClick: () => {
+                  
+                this.addLine();
+              }
+            },
+            { 
+              label: "Add Arrow", 
+              onClick: () => {
+                  
+                this.addArrow();
+              }
+            }
+        ]
+
+      },
       { 
         label: "Move forward", 
         onClick: () => {
@@ -269,6 +304,7 @@ export default {
           this.sendForward(e.target.name());
         }
       },
+     
       { 
         label: "Move backward",
         onClick:  () => {

@@ -97,7 +97,7 @@
             <td>{{ getUsableSceneData(scene.id).description }}</td>
             <td> 
                 <button @click="addBefore(scene)">addBefore</button>
-                <div :style="{backgroundColor : getUsableSceneData(scene.id).color }" style="width:60px; height:40px"></div>
+                <div :style="{backgroundColor : getUsableSceneData(scene.id).color }" style="width:60px; height:40px;margin: auto; margin-top: 20px; margin-bottom: 20px;"></div>
                 <button @click="addAfter(scene)">addAfter</button>
 
             </td>
