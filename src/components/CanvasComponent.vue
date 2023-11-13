@@ -119,11 +119,8 @@ export default {
         planImage : {
             handler(newvalue,oldvalue){
                 this.formes = newvalue.formes ? newvalue.formes : []
-                console.log(this.formes)
                 this.$nextTick(() => {
-                    console.log('paint')
                     const stage = this.$refs.stage.getNode();
-                    console.log(stage)
         if (stage) {
           stage.draw();
         }
@@ -168,7 +165,6 @@ export default {
             return '#000000'
         },
         allforms() {
-            console.log(this.stageSize.background)
             return this.squares.concat(this.lines).concat(this.ellipses).concat(this.text).concat(this.arrows)
         }
     },
@@ -216,7 +212,6 @@ export default {
             if(!(this.copyval === null || this.copyval === undefined)){
                 var ca = JSON.parse(this.copyval)
                 ca.name = ca.type+this.formes.length
-                console.log("pasteval",this.copyval)
                 this.formes.push(
                    ca
                 )
@@ -257,7 +252,6 @@ export default {
   // prevent the browser's default menu
     //  e.preventDefault();
   // show the context menu
-  console.log(e)
   this.$contextmenu({
     x: e.evt.clientX,
     y: e.evt.clientY,
@@ -353,12 +347,10 @@ export default {
                                                         return cop
     },
         saveImage() {
-            console.log("caca",this.planImage)
 
             let stage = this.$refs.stage.getNode()
             let dataURL = stage.toDataURL()
-            // console.log(dataURL)
-            // console.log(this.planimage)
+  
             this.$emit('updateImage',{
                 planImage : {
                     formes : this.formes,
@@ -393,7 +385,6 @@ export default {
         },
         supprElem() {
             var find = this.formes.find(elem => elem.name === this.selectedShapeName)
-            console.log(find)
             var index = this.formes.indexOf(find)
             this.formes.splice(index,1)
             this.updateTransformer()
@@ -467,7 +458,6 @@ export default {
                     name: "square" + String(this.formes.length),
                     draggable: true,
                 })
-            console.log("square added")
         },
         addText() {
             this.formes.push(
@@ -484,7 +474,6 @@ export default {
                     name: "text" + String(this.formes.length),
                     draggable: true,
                 })
-            console.log("square added")
         },
         addCircle() {
             this.formes.push(
@@ -500,7 +489,6 @@ export default {
                     name: "circle" + String(this.formes.length)
                 }
             )
-            console.log("circle added")
 
         },
         addLine() {
@@ -535,7 +523,6 @@ export default {
             if(type === "line"){
 
                 rect = this.lines.find(sq => sq.name === name)
-                console.log(rect)
                 rect.rotation = evt.target.rotation();
             rect.scaleX = evt.target.scaleX();
             rect.scaleY = evt.target.scaleY();
@@ -558,7 +545,6 @@ export default {
                     case "arrow":
                         rect = this.arrows.find(sq => sq.name === name)
                         break;}
-                        console.log(evt)
             rect.x = evt.target.x();
             rect.y = evt.target.y();
             rect.rotation = evt.target.rotation();
@@ -582,7 +568,6 @@ export default {
             rect = this.allforms.find(
                 (r) => r.name === this.selectedShapeName
             );
-            console.log(rect)
             // update the state
             rect.x = e.target.x();
             rect.y = e.target.y();

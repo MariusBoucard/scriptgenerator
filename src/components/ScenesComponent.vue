@@ -125,7 +125,6 @@ export default{
     watch: {
         currentSoundLink : {
             handler(newvalue, oldvalue) {
-                console.log(newvalue)
                 try{
                     
                                         const audioPlayer = this.$refs.audioPlayerScene;
@@ -142,7 +141,6 @@ export default{
                 };
     
                 } catch(e){
-                    console.log("zbiii")
                 }
     },
     immediate: true
@@ -188,7 +186,6 @@ export default{
         },
         selectedId() {
             if (this.idList.length > 0) {
-                console.log("idlist", this.idList);
                 return this.idList[this.index];
             }
             else {
@@ -196,10 +193,8 @@ export default{
             }
         },
         idList() {
-            console.log(this.zoneList);
             const filteredList = this.zoneList
                 .map(zone => zone.numero); // Extract the age attribute from each object
-            console.log(filteredList);
             return Array.from(new Set(filteredList));
         },
         nbZone() {
@@ -239,7 +234,6 @@ export default{
             this.$emit('delPlan',scene)
         },
         changeTimeDeb(scene,evt){
-            console.log(scene,evt)
             this.$emit("changeDeb",{
                 scene : scene,
                 value : evt
@@ -247,28 +241,22 @@ export default{
            
         },
         changeTimeEnd(scene,evt){
-            console.log("pute")
             this.$emit("changeEnd",{
                 scene : scene,
                 value : evt
             })
         },
         getTimeOptions() {
-            console.log(this.selectedZone)
       const rangeStart = this.selectedZone[0].timeDeb
       const rangeEnd = this.selectedZone[0].timeFin;
       const step = 0.1;
-        console.log(rangeStart)
-        console.log(rangeEnd)
       const options = [];
       for (let time = rangeStart; time <= rangeEnd; time += step) {
         options.push(time);
       }
-      console.log(options)
       return options;
     },
         addScene(listItem,newScenePosition){
-            console.log(listItem)
             if(listItem.length>0){
 
                 
@@ -278,7 +266,6 @@ export default{
         },
         updateDescriptionZone(evt){
             var a = this.selectedZone
-            console.log(a)
             this.$emit('updateDescriptionZone',{ zonenb : a[0].numero , value : evt.target.value})
             
         },
@@ -331,36 +318,28 @@ export default{
 
                 var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
                 var copy = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === evt)
-                console.log(copy)
                 scene.planImage = JSON.parse(JSON.stringify(copy.planImage))
                 if(copy.data!==undefined){
                     scene.planData = JSON.parse(JSON.stringify(copy.data))
 
                 }
 
-                console.log("caca",copy)
                 this.$emit('sceneUpdated',scene)
             
         },
         updateImage(zone,nbDsZone,evt){
-            console.log(this.planListComp)
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
-            console.log(zone,nbDsZone)
             scene.planImage = evt.planImage
             scene.planData = evt.data
             this.$emit('sceneUpdated',scene)
         },
         updateDescription(zone,nbDsZone,evt){
-            console.log(this.planListComp)
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
-            console.log(zone,nbDsZone)
             scene.description = evt
             this.$emit('sceneUpdated',scene)
         },
         addCharacter(zone,nbDsZone){
-            console.log(this.planListComp)
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
-            console.log(zone,nbDsZone)
             if(this.selectedCharacter!== ''){
 
                 scene.characters.push(this.selectedCharacter)
@@ -368,24 +347,19 @@ export default{
             }
         },
         removeCharacter(zone,nbDsZone,char){
-            console.log(this.planListComp)
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
-            console.log(zone,nbDsZone)
        
                 scene.characters.splice(scene.characters.indexOf(char),1)
                 this.$emit('sceneUpdated',scene)
             
         },
         updateParoles(zone,nbDsZone,evt){
-            console.log(this.planListComp)
             var scene = this.planListComp.find(plan => plan.zone===zone && plan.numeroDsZone === nbDsZone)
-            console.log(zone,nbDsZone)
             scene.paroles = evt
             this.$emit('sceneUpdated',scene)
         },
         getUsableSceneData(id) {
-            console.log(id)
-            // console.log( )
+      
             return this.usablePlanList.find(a => parseInt(a.id) === parseInt(id));
         },
         nextZone() {

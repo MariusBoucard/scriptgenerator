@@ -90,7 +90,6 @@ export default {
     methods: {
         outilParType(type){
 
-            console.log("typeOUtil",this.typeOutil)
             return this.magasinList.filter(outil => outil.type === type)
         },
         removeOutil(outil){

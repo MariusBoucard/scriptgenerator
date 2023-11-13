@@ -140,11 +140,9 @@ export default{
     methods : {
         updateTitle(){
             this.$emit('updateTitle',this.titleInside)
-            console.log("titleUpdated")
         },
         updateAuthor(){
             this.$emit('updateAuthor',this.authorInside)
-            console.log("autorUpdated")
             
         },
         getPlan(id){
@@ -169,7 +167,6 @@ export default{
         changeZoneColor(id,color){
             var plan = this.getZone(id)
             plan.color = color
-            console.log("color changed",color)
             this.$emit('colorZoneChanged',{ id : id, list : this.zoneListInside})
 
         },

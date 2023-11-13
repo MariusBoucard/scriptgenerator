@@ -192,7 +192,6 @@ export default {
       this.scriptData.timeline.songPath.splice(numero,1)
     },
     zoneIdUpdate(evt){
-      console.log(evt)
       var chgt = this.scriptData.timeline.zoneList.find(zo => zo.timeDeb === evt.item.timeDeb)
       chgt.id = evt.value
       // var chgt =  this.scriptData.timeline.planList.find(elm => elm.timeDeb === evt.item.timeDeb)
@@ -202,14 +201,12 @@ export default {
     planIdChanged(evt){
       var chgt =  this.scriptData.timeline.planList.find(elm => elm.timeDeb === evt.item.timeDeb)
       chgt.id = evt.value
-      console.log(chgt)
       this.save()
     },
     updateDescriptionZone(evt){
       
         var zo =this.scriptData.timeline.zoneList.find(zone => zone.numero === evt.zonenb)
         zo.description = evt.value
-        console.log(zo,"zone desc update")
         this.save()
     },
     updateSynopsis(event) {
@@ -218,7 +215,6 @@ export default {
     },
     fileChanged(event){
       this.currentFile = event
-      console.log(this.currentFile)
       this.save()
 
     },
@@ -230,9 +226,7 @@ export default {
         reader.onload = (event) => {
           this.scriptData = JSON.parse(event.target.result, this.reviver);
           // Do something with the jsonData object here
-          console.log("chargé")
-          console.log(event.target.result);
-          console.log(this.scriptData)
+   
           this.$forceUpdate()
           // this.$forceUpdate()
         };
@@ -252,7 +246,6 @@ export default {
     },
     save() {
       localStorage.setItem('saveApp', JSON.stringify(this.scriptData))
-      console.log("saved")
     },
     load() {
       if (localStorage.getItem('saveApp')) {
@@ -273,24 +266,20 @@ export default {
     updateScene(evt) {
       var scene = this.scriptData.timeline.planList.find(plan => plan.zone === evt.zone && plan.nbDsZone === evt.nbDsZone)
       scene = evt
-      console.log("update Scene", this.scriptData.timeline.planList)
       this.save()
     },
     updatePlan(evt) {
       this.scriptData.timeline.planList = evt
-      console.log("updatePlan", this.scriptData.timeline.planList)
       this.save()
     },
 
     fileLoad(evt) {
-      console.log("fileLoad", evt)
       this.scriptData.timeline.songPath = evt
       this.save()
 
     },
     updateZone(evt) {
       this.scriptData.timeline.zoneList = evt
-      console.log("updateZone", this.scriptData.timeline.zoneList)
       this.save()
 
 
@@ -299,7 +288,6 @@ export default {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usablePlanList = evt.list
-      console.log("descPlanCHanged", this.scriptData.usablePlanList)
       this.save()
 
     },
@@ -307,7 +295,6 @@ export default {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usableZoneList = evt.list
-      console.log("nameZoneChanges", this.scriptData.usableZoneList)
       this.save()
 
     },
@@ -315,7 +302,6 @@ export default {
       //TODO use id to handle border effect
       var id = evt.id
       this.scriptData.usablePlanList = evt.list
-      console.log("namplanCanges", this.scriptData.usablePlanList)
       this.save()
 
 
@@ -351,7 +337,6 @@ export default {
     },
     fart() {
       this.test = new Flag(1, 1.2, 1.5, "#000000")
-      console.log(this.test)
     },
     updateShow(name) {
       var keys = Object.keys(this.showComponentObject)
@@ -368,7 +353,6 @@ export default {
     updateColorZone(event) {
       var found = this.scriptData.usableZoneList.find(zone => zone.id === event.id)
       found.color = event.value
-      console.log("found", found.color)
       this.save()
 
     },
@@ -423,7 +407,6 @@ export default {
 
     },
     removeAccessoireCharacter(character, costume) {
-      console.log(character)
       var find = this.scriptData.characterList.find(act => act.name === character)
       find.removeAccessoire(costume)
       this.save()

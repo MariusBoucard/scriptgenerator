@@ -181,11 +181,7 @@ export default {
       this.currentTime = this.audioPlayer.currentTime;
       this.totalTime = this.audioPlayer.duration;
     });
-    // console.log(localStorage.getItem('songList'))
-    // if (localStorage.getItem('songList') !== null) {
 
-    //   this.songPath = JSON.parse(localStorage.getItem('songList'))
-    // }
 
 
   },
@@ -260,7 +256,6 @@ export default {
 
       const barHeight = 100; // change as needed
       const leftPosition = (this.currentTime / this.duration) * 100;
-      console.log(leftPosition)
       return {
         height: `${barHeight}%`,
         left: `${leftPosition}%`,
@@ -333,10 +328,8 @@ export default {
   methods: {
     remove(item){
       var index = this.songPath.indexOf(item)
-      console.log(index)
 
       if(index>-1){
-        console.log("great")
 
         // this.songPath.splice(index, 1);
         this.$emit('delSong',index)
@@ -406,7 +399,6 @@ export default {
 
     setPlanId(item, event) {
       //TODO connect event
-      console.log(item, event)
       var find = this.eventList.find(elem => elem.timeDeb === item.timeDeb)
    
       this.$emit('setPlanId', 
@@ -445,10 +437,8 @@ export default {
 
       var total = event.concat(zone)
       total = total.sort((a, b) => a.timeDeb - b.timeDeb)
-      console.log(total)
 
       const rows = total.map(obj => {
-        console.log(Object.keys(obj)[0])
         if (Object.keys(obj)[0] === "partie") {
           return "\n" + Object.values(obj).join(',');
         } else {
@@ -521,7 +511,6 @@ export default {
       }
 
       const filtered = this.eventList.filter(evt => evt.zone === null)
-      console.log("evt list null" + filtered)
       filtered.forEach(
         (item, index) =>
           item.numeroDsZone = index + 1
@@ -537,7 +526,6 @@ export default {
       })
 
       this.$emit('planUpdated', this.eventList)
-      console.log("plan updated")
     },
     updateZoneList() {
 
@@ -552,11 +540,9 @@ export default {
     handleKeyDown(event) {
       //TODO HUGE
       // Do something with the event, such as logging the key code
-      console.log("Eventcode " + event.keyCode)
 
       this.usablePlanList.forEach(
         plan => {
-          console.log(plan.key)
           if (parseInt(plan.key) === parseInt(event.keyCode)) {
 
             this.endPlusProche(this.getTime())
@@ -599,7 +585,6 @@ export default {
       var eventPlusProche = new Flag(9, -1, 'red', "caca")
       this.eventList.forEach(
         event => {
-          console.log(event.timeFin)
           if ((event.timeFin > eventPlusProche.timeFin && event.timeFin < time && String(event.timeFin) !== 'null')
             || (String(event.timeFin) === 'null' && String(event.timeDeb) < time)
             || (String(event.timeFin) > time && String(event.timeDeb) < time)) {
@@ -626,7 +611,6 @@ export default {
       )
 
       if (eventPlusProche.timeFin !== -1) {
-        console.log(typeof eventPlusProche); // output: "number"
         eventPlusProche.timeFin = time
       }
 
@@ -677,7 +661,6 @@ export default {
       this.audioPlayer.addEventListener('canplaythrough', () => {
     this.totalTime = this.audioPlayer.duration;
   });
-      console.log("pute",this.duration)
      
 
       // reader.readAsDataURL(file.path);
